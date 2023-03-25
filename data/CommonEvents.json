@@ -1,7 +1,7 @@
 [
 null,
-{"id":1,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
-{"id":2,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
+{"id":1,"list":[{"code":357,"indent":0,"parameters":["AlchemySystem","StartAlchemyScene","合成场景开始",{}]},{"code":0,"indent":0,"parameters":[]}],"name":"合成书","switchId":1,"trigger":0},
+{"id":2,"list":[{"code":111,"indent":0,"parameters":[8,37]},{"code":126,"indent":1,"parameters":[37,1,0,1]},{"code":122,"indent":1,"parameters":[19,19,0,3,3,1,6]},{"code":122,"indent":1,"parameters":[18,18,0,0,300]},{"code":122,"indent":1,"parameters":[18,18,1,1,19]},{"code":122,"indent":1,"parameters":[4,4,0,3,8,4,0]},{"code":311,"indent":1,"parameters":[1,4,0,1,18,false]},{"code":0,"indent":1,"parameters":[]},{"code":411,"indent":0,"parameters":[]},{"code":101,"indent":1,"parameters":["",0,0,2,""]},{"code":401,"indent":1,"parameters":["你没有简易绷带！"]},{"code":0,"indent":1,"parameters":[]},{"code":412,"indent":0,"parameters":[]},{"code":0,"indent":0,"parameters":[]}],"name":"包扎1消耗","switchId":1,"trigger":0},
 {"id":3,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
 {"id":4,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0}
 ]
