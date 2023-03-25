@@ -115,13 +115,20 @@
     }
     Window_StatusBar.prototype.drawStateItem = function (actor, x, y) {
         const lineHeight = this.lineHeight();
-        const iconWidth = ImageManager.iconWidth;
+        const boxWidth = Graphics.boxWidth / 3;
         let states = actor.states();
-        for (const state of states) {
-            this.drawIcon(state.iconIndex, x, y);
-            this.drawText( state.name, 0, y, Graphics.boxWidth / 3, 'center');
-            y += lineHeight;
+        for (let i = 0; i < states.length; i++) {
+            this.drawIcon(states[i].iconIndex, x, y);
+            this.drawText(states[i].name, 1.5 * ImageManager.iconWidth, y, boxWidth / 2 - 2.5 * ImageManager.iconWidth, 'center');
+            if (i + 1 >= states.length){
+                break;
+            }
+            i++;
+            this.drawIcon(states[i].iconIndex, x + boxWidth / 2, y);
+            this.drawText(states[i].name, boxWidth / 2 + 1.5 * ImageManager.iconWidth, y, boxWidth / 2 - 2.5 * ImageManager.iconWidth, 'center');
+            y += lineHeight
         }
     }
+
 
 })()
