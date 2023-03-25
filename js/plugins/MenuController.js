@@ -113,18 +113,13 @@
             this.drawStateItem(this._actor, 10, 10)
         }
     }
-
-    Window_StatusBar.prototype.drawStateItem = function (actor, x, y, width) {
-        width = width || 144;
+    Window_StatusBar.prototype.drawStateItem = function (actor, x, y) {
         const lineHeight = this.lineHeight();
         const iconWidth = ImageManager.iconWidth;
-        const icons = actor.allIcons().slice(0, Math.floor(width / iconWidth));
-        let i = 0;
         let states = actor.states();
-        for (const icon of icons) {
-            this.drawIcon(icon, x, y);
-            let text = states[i++].name;
-            this.drawText( text, 0, y, Graphics.boxWidth / 3, 'center');
+        for (const state of states) {
+            this.drawIcon(state.iconIndex, x, y);
+            this.drawText( state.name, 0, y, Graphics.boxWidth / 3, 'center');
             y += lineHeight;
         }
     }
