@@ -67,7 +67,7 @@
         this._statusBarWindow = new Window_StatusBar(rect);
         this.addWindow(this._statusBarWindow);
     }
-    Scene_Status.prototype.refreshActor = function () {
+    Scene_Status.prototype.refreshActor = function() {
         const actor = this.actor();
         this._profileWindow.setText(actor.profile());
         this._statusWindow.setActor(actor);
@@ -84,7 +84,7 @@
         return new Rectangle(wx, wy, ww, wh);
     }
 
-    Window_Status.prototype.drawBasicInfo = function (x, y) {
+    Window_Status.prototype.drawBasicInfo = function(x, y) {
         const lineHeight = this.lineHeight();
         this.drawActorLevel(this._actor, x, y + lineHeight * 0);
         // 关闭在左侧BAR的图标显示
@@ -96,11 +96,11 @@
     }
     Window_StatusBar.prototype = Object.create(Window_StatusBase.prototype);
     Window_StatusBar.prototype.constructor = Window_StatusBar;
-    Window_StatusBar.prototype.initialize = function (rect) {
+    Window_StatusBar.prototype.initialize = function(rect) {
         Window_StatusBase.prototype.initialize.call(this, rect);
         this.refresh();
     };
-    Window_StatusBar.prototype.setActor = function (actor) {
+    Window_StatusBar.prototype.setActor = function(actor) {
         if (this._actor !== actor) {
             this._actor = actor;
             this.refresh();
@@ -113,20 +113,22 @@
             this.drawStateItem(this._actor, 10, 10)
         }
     }
-
-    Window_StatusBar.prototype.drawStateItem = function (actor, x, y, width) {
-        width = width || 144;
+    Window_StatusBar.prototype.drawStateItem = function (actor, x, y) {
         const lineHeight = this.lineHeight();
-        const iconWidth = ImageManager.iconWidth;
-        const icons = actor.allIcons().slice(0, Math.floor(width / iconWidth));
-        let i = 0;
+        const boxWidth = Graphics.boxWidth / 3;
         let states = actor.states();
-        for (const icon of icons) {
-            this.drawIcon(icon, x, y);
-            let text = states[i++].name;
-            this.drawText(text, 0, y, Graphics.boxWidth / 3, 'center');
-            y += lineHeight;
+        for (let i = 0; i < states.length; i++) {
+            this.drawIcon(states[i].iconIndex, x, y);
+            this.drawText(states[i].name, 1.5 * ImageManager.iconWidth, y, boxWidth / 2 - 2.5 * ImageManager.iconWidth, 'center');
+            if (i + 1 >= states.length){
+                break;
+            }
+            i++;
+            this.drawIcon(states[i].iconIndex, x + boxWidth / 2, y);
+            this.drawText(states[i].name, boxWidth / 2 + 1.5 * ImageManager.iconWidth, y, boxWidth / 2 - 2.5 * ImageManager.iconWidth, 'center');
+            y += lineHeight
         }
     }
+
 
 })()
