@@ -39,7 +39,7 @@
     Window_ActorCommand.prototype.makeCommandList = function () {
         if (this._actor) {
             this.addSkillCommands();
-            this.addAttackCommand(); //观察
+            //this.addAttackCommand(); //观察
             this.addGuardCommand();
             this.addItemCommand();
             this.addCommand(TextManager.escape, "escape", BattleManager.canEscape());
@@ -174,14 +174,9 @@
     //修改BattleStatus窗口绘制函数 rmmz_windows.js/Line 6043
     Window_BattleStatus.prototype.initialize = function(rect) {
         Window_StatusBase.prototype.initialize.call(this, rect);
-        
         this.frameVisible = false;
         this.openness = 0;
         this._bitmapsReady = 0;
         this.preparePartyRefresh();
     };
-
-    Window_StatusBase.prototype.initActionOrder = function(){
-        
-    }
 })()

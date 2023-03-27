@@ -31,8 +31,7 @@ Window_Base.prototype.initialize = function(rect) {
 Window_Base.prototype.destroy = function(options) {
     this.destroyContents();
     if (this._dimmerSprite) {
-        this._dimmerSprite.bitmap.destroy();
-    }
+        this._dimmerSprite.bitmap.destroy();    }
     Window.prototype.destroy.call(this, options);
 };
 
