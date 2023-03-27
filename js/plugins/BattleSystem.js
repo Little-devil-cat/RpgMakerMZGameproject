@@ -20,8 +20,8 @@
         this.gainSilentTp(1);
     };
 
-    //修改最大Tp
+    //修改最大Tp rmmz_object.js/Line 3044
     Game_BattlerBase.prototype.maxTp = function() {
-        return 5;
+        return 7;
     };
 })()
