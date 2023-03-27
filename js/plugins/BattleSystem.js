@@ -1,8 +1,6 @@
 /*
 * 修改Tp值获取方式、上限算法
-* 
-*
-* */
+*/
 (() => {
     //注释掉受伤影响Tp的功能 rmmz_objects.js/Line 3930
     Game_Battler.prototype.onDamage = function(value) {
@@ -20,5 +18,10 @@
         //const value = Math.floor(100 * this.trg);
         //this.gainSilentTp(value);
         this.gainSilentTp(1);
+    };
+
+    //修改最大Tp
+    Game_BattlerBase.prototype.maxTp = function() {
+        return 5;
     };
 })()

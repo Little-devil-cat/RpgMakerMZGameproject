@@ -137,5 +137,51 @@
         }
     }
 
+    /*
+    在战斗界面中正上方加入回合行动顺序，根据 rmmz_manager.js/Line 2723 中函数 makeActionOrders 得到最终行动顺序
+    修改回合开始函数 rmmz_manager.js/Line 2596
+    */
+    battlers_ActionOrder = [];
 
+    BattleManager.startTurn = function() {
+        this._phase = "turn";
+        $gameTroop.increaseTurn();
+        $gameParty.requestMotionRefresh();
+        if (!this.isTpb()) {
+            //this.makeActionOrders();
+            battlers_ActionOrder = this.makeActionOrders();
+            this._logWindow.startTurn();
+            this._inputting = false;
+        }
+    };
+
+    BattleManager.makeActionOrders = function() {
+        const battlers = [];
+        if (!this._surprise) {
+            battlers.push(...$gameParty.battleMembers());
+        }
+        if (!this._preemptive) {
+            battlers.push(...$gameTroop.members());
+        }
+        for (const battler of battlers) {
+            battler.makeSpeed();
+        }
+        battlers.sort((a, b) => b.speed() - a.speed());
+        this._actionBattlers = battlers;
+        return battlers;
+    };
+
+    //修改BattleStatus窗口绘制函数 rmmz_windows.js/Line 6043
+    Window_BattleStatus.prototype.initialize = function(rect) {
+        Window_StatusBase.prototype.initialize.call(this, rect);
+        
+        this.frameVisible = false;
+        this.openness = 0;
+        this._bitmapsReady = 0;
+        this.preparePartyRefresh();
+    };
+
+    Window_StatusBase.prototype.initActionOrder = function(){
+        
+    }
 })()
