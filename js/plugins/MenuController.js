@@ -30,6 +30,12 @@
     /*
     * 3. 观察是第一个选项，把他放到防御和治疗中间
     * */
+    var SceneBattle_createActorCommandWindow0324 = Scene_Battle.prototype.createActorCommandWindow
+    Scene_Battle.prototype.createActorCommandWindow = function () {
+        SceneBattle_createActorCommandWindow0324.call(this)
+        this._actorCommandWindow.setHandler('escape', this.commandEscape.bind(this));
+    }
+
     Window_ActorCommand.prototype.makeCommandList = function () {
         if (this._actor) {
             this.addSkillCommands();
@@ -39,6 +45,7 @@
             this.addCommand(TextManager.escape, "escape", BattleManager.canEscape());
         }
     }
+
     /*
     * 4. 状态点进去太大了，把这个往左压缩一半，右边新增一栏能人物读取状态并显示
     * */
