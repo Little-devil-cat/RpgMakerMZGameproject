@@ -5,5 +5,6 @@ var $plugins =
 {"name":"AlchemySystem","status":true,"description":"项目合成插件 v1.0.3","parameters":{"EnabledMenuAlchemy":"true","EnabledAlchemySwitchId":"0","EnabledGoldWindow":"true","DisplayKeyItemCategory":"false","MaxNumMakeItem":"999","MaxMaterials":"3","MakeItemSeFileName":"Heal5","MakeItemSeVolume":"90","MakeItemSePitch":"100","MakeItemSePan":"0","MenuAlchemyText":"合成","NeedMaterialText":"必要素材：","NeedPriceText":"必要経費：","TargetItemText":"生成的项目："}},
 {"name":"MenuController","status":true,"description":"","parameters":{}},
 {"name":"XdRs_InformationTips","status":true,"description":"得失物品信息提示。","parameters":{"displayType":"L","iconTips":"false","currencyIcon":"314","loseSe":"","variableSe":"","goldSe":"","itemSe":"","color0":"11","color1":"18","variableArr":"[]"}},
-{"name":"BattleSystem","status":true,"description":"","parameters":{}}
+{"name":"BattleSystem","status":true,"description":"","parameters":{}},
+{"name":"ActionQueue","status":true,"description":"战斗界面增加行动顺序显示条","parameters":{"Screen width":"816","Screen height":"624"}}
 ];
