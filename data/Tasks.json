@@ -1,1 +1,1 @@
-[null]
+[null,{"id":1,"name":"和医生见面","type":0,"difficulty":1,"autoFinish":false,"issuer":"","introduce":"去医院和医生见面吧","conditions":[{"type":1,"dataId":5,"demand":1,"text":"","code":""}],"prizes":[{"type":1,"dataId":1,"num":1,"text":"","code":""}],"failCode":"","finishCode":"","note":""}]
