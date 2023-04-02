@@ -26,7 +26,7 @@
  * @desc 引擎初始默认为36
  * @default 30
  */
-const parameters = PluginManager.parameters('ActionQueue');
+const params_action_queue = PluginManager.parameters('ActionQueue');
 // 实现文字条在行动顺序下方
 
 Scene_Battle.prototype.logWindowRect = function() {
@@ -55,13 +55,13 @@ Window_Base.prototype.drawTextExCenter = function(text, x, y, width) {
 // 实现文字条不透明度25
 Window_BattleLog.prototype.backPaintOpacity = function() {
     // return 64;
-    return JSON.parse(parameters['textOpacity']);
+    return JSON.parse(params_action_queue['textOpacity']);
 };
 
 //=====================================================================================
 // 玩家战斗栏改矮到原来的6/5左右
 Window_Base.prototype.lineHeight = function() {
-    return JSON.parse(parameters['lineHeight']);
+    return JSON.parse(params_action_queue['lineHeight']);
 };
 //=====================================================================================
 // 拉长血条长度
@@ -75,7 +75,7 @@ Window_Base.prototype.lineHeight = function() {
 //     sprite.show();
 // };
 Sprite_Gauge.prototype.bitmapWidth = function() {
-    return JSON.parse(parameters['gaugeWidth']);
+    return JSON.parse(params_action_queue['gaugeWidth']);
 };
 
 //=====================================================================================
@@ -226,7 +226,7 @@ Window_Speed.prototype.refresh = function () {
             }
 
         }
-        let scale = JSON.parse(parameters['scale']);
+        let scale = JSON.parse(params_action_queue['scale']);
         let spacingX = ImageManager.faceWidth * 0.5 * scale * 1.5
         let x = (Graphics.boxWidth - spacingX * length) / 2;
         let y = this.innerHeight / 2;
