@@ -996,7 +996,7 @@ Game_System.prototype.initialize = function() {
     const y = parseInt(arr[1]) || 0;
     this._taskSwitchId = parseInt(parameters['menuSwitch']) || 0;
     /* 追踪窗口初始数据（追踪的任务，坐标，收放状态，是否显示）*/
-    this._trackeData = {'tasks':[],'x':x,'y':y,'show':true,'visibility':true};
+    this._trackeData = {'tasks':[],'x':x,'y':y,'show':true,'visibility':false};
 };
 Game_System.prototype.isTaskEnabled = function() {
     return $gameSwitches.value(this._taskSwitchId);

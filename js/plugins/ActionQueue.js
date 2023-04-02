@@ -2,13 +2,36 @@
  * @plugindesc 战斗界面增加行动顺序显示条
  * @author Hale Lin
  *
+ * @param textOpacity
+ * @text 文字条不透明度
+ * @type number
+ * @desc 目前默认为192，公式为textOpacity / 255
+ * @default 192
+ *
+ * @param gaugeWidth
+ * @text 血条长度
+ * @type number
+ * @desc 目前默认为240
+ * @default 240
+ *
+ * @param scale
+ * @text 行动条头像缩放
+ * @type number
+ * @desc 目前默认为0.5
+ * @default 0.5
+ *
+ * @param lineHeight
+ * @text 行高
+ * @type number
+ * @desc 引擎初始默认为36
+ * @default 30
  */
-
+const parameters = PluginManager.parameters('ActionQueue');
 // 实现文字条在行动顺序下方
 
 Scene_Battle.prototype.logWindowRect = function() {
     const wx = Graphics.boxWidth / 4;
-    const wy = Graphics.boxHeight / 6;
+    const wy = Graphics.boxHeight / 9;
     const ww = Graphics.boxWidth / 2;
     const wh = this.calcWindowHeight(10, false);
     return new Rectangle(wx, wy, ww, wh);
@@ -28,6 +51,31 @@ Window_Base.prototype.drawTextExCenter = function(text, x, y, width) {
     const leftMargin = (this.width - textWidth) / 2;
     // 输出文本
     this.drawTextEx(text, x + leftMargin, y, width);
+};
+// 实现文字条不透明度25
+Window_BattleLog.prototype.backPaintOpacity = function() {
+    // return 64;
+    return JSON.parse(parameters['textOpacity']);
+};
+
+//=====================================================================================
+// 玩家战斗栏改矮到原来的6/5左右
+Window_Base.prototype.lineHeight = function() {
+    return JSON.parse(parameters['lineHeight']);
+};
+//=====================================================================================
+// 拉长血条长度
+// Window_StatusBase.prototype.placeGauge = function(actor, type, x, y) {
+//     const key = "actor%1-gauge-%2".format(actor.actorId(), type);
+//     const sprite = this.createInnerSprite(key, Sprite_Gauge);
+//     sprite.setup(actor, type);
+//     sprite.move(x, y);
+//     //add
+//     sprite.scale.x = 1.5
+//     sprite.show();
+// };
+Sprite_Gauge.prototype.bitmapWidth = function() {
+    return JSON.parse(parameters['gaugeWidth']);
 };
 
 //=====================================================================================
@@ -81,8 +129,12 @@ BattleManager.makeActionOrders = function () {
     console.log(battlers)
     this._actionBattlers = battlers;
 };
-
-
+//=====================================================================================
+// ImageManager加载自己的静态资源
+ImageManager.loadExPic = function(filename) {
+    return this.loadBitmap("img/extra_pictures/", filename);
+};
+//=====================================================================================
 function Window_Speed() {
     this.initialize.apply(this, arguments);
 }
@@ -92,11 +144,23 @@ Window_Speed.prototype.constructor = Window_Speed;
 
 Window_Speed.prototype.initialize = function (rect) {
     Window_Base.prototype.initialize.call(this, rect);
+    this.createBackground();
     this.refresh();
 };
 
-//=====================================================================================
+Window_Speed.prototype.createBackground = function () {
+    //设置无边框
+    this.setBackgroundType(2);
+    this._windowBackSprite = new Sprite();
+    this.addChildToBack(this._windowBackSprite);
+    this._windowBackSprite.bitmap = ImageManager.loadExPic('行动顺序背景图');
+    this._windowBackSprite.scale.x = this.width / 2560
+    this._windowBackSprite.scale.y = this.height / 180
+    this._windowBackSprite.setFrame(0, 0, 2560, 180);
+}
 
+//=====================================================================================
+// 敌方Sprite
 function Sprite_myEnemy(enemy) {
     Sprite.call(this);
     this._enemy = enemy;
@@ -114,9 +178,15 @@ Sprite_myEnemy.prototype.createMainBitmap = function () {
     var hue = this._enemy.battlerHue();
     this.bitmap = ImageManager.loadSvEnemy(name, hue);
 };
+Sprite_myEnemy.prototype.drawBorder= function () {
+    const border = new PIXI.Graphics();
+    border.lineStyle(5, 0x000000,1);
+    border.drawRect(-this.width/2, -this.height/2, this.width, this.height);
+    this.addChild(border);
+}
 
 //=====================================================================================
-
+//我方Sprite
 function Sprite_myActor(actor) {
     Sprite.call(this);
     this._actor = actor;
@@ -133,8 +203,14 @@ Sprite_myActor.prototype.createMainBitmap = function () {
     var name = this._actor._faceName;
     this.bitmap = ImageManager.loadFace(name);
 };
-
-
+Sprite_myActor.prototype.drawBorder= function () {
+    const border = new PIXI.Graphics();
+    border.lineStyle(5, 0x000000, 1);
+    border.drawRect(-this.width/2, -this.height/2, this.width, this.height);
+    this.addChild(border);
+}
+//=====================================================================================
+// 创建速度窗口
 Window_Speed.prototype.refresh = function () {
     if (this._innerChildren.length !== BattleManager._actionBattlers.length) {
         if (this._innerChildren.length > BattleManager._actionBattlers.length) {
@@ -143,34 +219,41 @@ Window_Speed.prototype.refresh = function () {
                 this._innerChildren.shift(i).destroy();
             }
         }
+        let length = BattleManager._actionBattlers.length;
+        for (const actionBattler of BattleManager._actionBattlers) {
+            if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
+                length--;
+            }
 
-        let scale = 0.4;
-        let spacingX = ImageManager.faceWidth * scale * 1.1
-        let x = (Graphics.boxWidth - spacingX * BattleManager._actionBattlers.length) / 2;
+        }
+        let scale = JSON.parse(parameters['scale']);
+        let spacingX = ImageManager.faceWidth * 0.5 * scale * 1.5
+        let x = (Graphics.boxWidth - spacingX * length) / 2;
         let y = this.innerHeight / 2;
         for (const actionBattler of BattleManager._actionBattlers) {
             // 死了就不画了
-            if (actionBattler._states.indexOf(1) >= 0) {
+            if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
                 continue
             }
             if (actionBattler._actorId) {
                 let spriteActor = new Sprite_myActor(actionBattler)
-                spriteActor.setFrame((actionBattler._faceIndex % 4) * ImageManager.faceWidth, Math.floor(actionBattler._faceIndex / 4) * ImageManager.faceHeight, ImageManager.faceWidth, ImageManager.faceHeight)
+                spriteActor.setFrame((actionBattler._faceIndex % 4) * ImageManager.faceWidth + ImageManager.faceWidth / 4, Math.floor(actionBattler._faceIndex / 4) * ImageManager.faceHeight + ImageManager.faceHeight / 4, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5)
                 spriteActor.scale.x = scale;
                 spriteActor.scale.y = scale;
                 spriteActor.x = x;
                 spriteActor.y = y;
+                spriteActor.drawBorder()
                 this.addInnerChild(spriteActor);
             } else {
                 let spriteEnemy = new Sprite_myEnemy(actionBattler)
-                spriteEnemy.setFrame(0, 0, ImageManager.faceWidth, ImageManager.faceHeight);
+                spriteEnemy.setFrame(0, 0, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5);
                 spriteEnemy.scale.x = scale;
                 spriteEnemy.scale.y = scale;
                 spriteEnemy.x = x;
                 spriteEnemy.y = y;
+                spriteEnemy.drawBorder()
                 this.addInnerChild(spriteEnemy);
             }
-            console.log(BattleManager._actionBattlers, this._innerChildren)
             x += spacingX;
         }
     }
@@ -192,15 +275,49 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createSpeedWindow(); // 创建速度窗口
     Scene_Message.prototype.createAllWindows.call(this);
 };
-
-Scene_Battle.prototype.createSpeedWindow = function () {
-    this._speedWindow = new Window_Speed(new Rectangle(0, 0, Graphics.boxWidth, Graphics.boxHeight / 6));
-    this.addWindow(this._speedWindow);
-    console.log(this._speedWindow)
+//移动一下help窗口不然会被挡到 => 改的跟战斗描述一样
+Scene_Battle.prototype.helpAreaTop = function() {
+    return  Graphics.boxHeight - this.helpAreaHeight() * 3 - 10;
+};
+Scene_Battle.prototype.createHelpWindow = function() {
+    const rect = this.helpWindowRect();
+    this._helpWindow = new Window_Help(rect);
+    this._helpWindow.hide();
+    this._helpWindow.setBackgroundType(1); //add
+    this.addWindow(this._helpWindow);
+};
+Scene_Battle.prototype.helpAreaHeight = function() {
+    return this.calcWindowHeight(2, false);
+};
+Scene_Battle.prototype.helpWindowRect = function() {
+    // const wx = 0;
+    const wx = 10;
+    const wy = this.helpAreaTop() + this.helpAreaHeight() / 3;
+    const ww = Graphics.boxWidth - 20;
+    const wh = this.helpAreaHeight() * 2 / 3;
+    return new Rectangle(wx, wy, ww, wh);
 };
 
-var old_Scene_Battle_update = Scene_Battle.prototype.update
+Window_Help.prototype.refresh = function() {
+    const rect = this.baseTextRect();
+    this.contents.clear();
+    // this.drawTextEx(this._text, rect.x, rect.y, rect.width);
+    // 计算文本宽度
+    const textWidth = this.drawTextEx(this._text, 0, this.contents.height);
+    // 计算左侧边距
+    const leftMargin = (rect.width - textWidth) / 2;
+    // 输出文本
+    this.drawTextEx(this._text,  rect.x + leftMargin, rect.y, rect.width);
+};
 
+// 行动条大小定义
+Scene_Battle.prototype.createSpeedWindow = function () {
+    this._speedWindow = new Window_Speed(new Rectangle(0, -4, Graphics.boxWidth, Graphics.boxHeight / 9));
+    this.addWindow(this._speedWindow);
+};
+
+
+var old_Scene_Battle_update = Scene_Battle.prototype.update
 
 Scene_Battle.prototype.update = function () {
     old_Scene_Battle_update.call(this)
