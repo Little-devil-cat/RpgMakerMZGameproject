@@ -121,6 +121,6 @@
 
     Game_Unit.prototype.aliveMembersExcludeUser = function() {
         const user = subject_temp;
-        return this.members().filter(member => member.isAlive()).filter(member => member !== user);
+        return this.members().filter(member => member.isAlive() && member !== user);
     };
 })()
