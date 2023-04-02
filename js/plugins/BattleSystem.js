@@ -17,7 +17,8 @@
     Game_Battler.prototype.regenerateTp = function() {
         //const value = Math.floor(100 * this.trg);
         //this.gainSilentTp(value);
-        this.gainSilentTp(1);
+        const value = Math.floor(10 * this.trg);
+        this.gainSilentTp(value + 1);
     };
 
     //修改最大Tp rmmz_object.js/Line 3044
