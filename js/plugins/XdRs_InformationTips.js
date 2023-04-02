@@ -317,7 +317,7 @@ Window_Information.prototype.initialize = function(index, data) {
     this.x = type === 0 ? -this.width : Graphics.width;
     this.drawTips();
     this.setupActions();
-    // 3/26
+    // 3/26 设置无边框背景
     this.setBackgroundType(1);
 };
 Window_Information.prototype.initInfoData = function(data) {
