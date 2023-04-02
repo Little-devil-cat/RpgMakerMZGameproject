@@ -275,14 +275,49 @@ Scene_Battle.prototype.createAllWindows = function () {
     this.createSpeedWindow(); // 创建速度窗口
     Scene_Message.prototype.createAllWindows.call(this);
 };
+//移动一下help窗口不然会被挡到 => 改的跟战斗描述一样
+Scene_Battle.prototype.helpAreaTop = function() {
+    return  Graphics.boxHeight - this.helpAreaHeight() * 3 - 10;
+};
+Scene_Battle.prototype.createHelpWindow = function() {
+    const rect = this.helpWindowRect();
+    this._helpWindow = new Window_Help(rect);
+    this._helpWindow.hide();
+    this._helpWindow.setBackgroundType(1); //add
+    this.addWindow(this._helpWindow);
+};
+Scene_Battle.prototype.helpAreaHeight = function() {
+    return this.calcWindowHeight(2, false);
+};
+Scene_Battle.prototype.helpWindowRect = function() {
+    // const wx = 0;
+    const wx = 10;
+    const wy = this.helpAreaTop() + this.helpAreaHeight() / 3;
+    const ww = Graphics.boxWidth - 20;
+    const wh = this.helpAreaHeight() * 2 / 3;
+    return new Rectangle(wx, wy, ww, wh);
+};
+
+Window_Help.prototype.refresh = function() {
+    const rect = this.baseTextRect();
+    this.contents.clear();
+    // this.drawTextEx(this._text, rect.x, rect.y, rect.width);
+    // 计算文本宽度
+    const textWidth = this.drawTextEx(this._text, 0, this.contents.height);
+    // 计算左侧边距
+    const leftMargin = (rect.width - textWidth) / 2;
+    // 输出文本
+    this.drawTextEx(this._text,  rect.x + leftMargin, rect.y, rect.width);
+};
+
 // 行动条大小定义
 Scene_Battle.prototype.createSpeedWindow = function () {
     this._speedWindow = new Window_Speed(new Rectangle(0, -4, Graphics.boxWidth, Graphics.boxHeight / 9));
     this.addWindow(this._speedWindow);
 };
 
-var old_Scene_Battle_update = Scene_Battle.prototype.update
 
+var old_Scene_Battle_update = Scene_Battle.prototype.update
 
 Scene_Battle.prototype.update = function () {
     old_Scene_Battle_update.call(this)
