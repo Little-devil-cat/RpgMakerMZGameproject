@@ -26,6 +26,7 @@
  * @desc 引擎初始默认为36
  * @default 30
  */
+(() => {
 const params_action_queue = PluginManager.parameters('ActionQueue');
 // 实现文字条在行动顺序下方
 
@@ -91,7 +92,39 @@ BattleManager.startTurn = function () {
         this._inputting = false;
     }
 };
+//为了标注谁在行动，把删除actionBattler移到行动后
+BattleManager.updateTurn = async function(timeActive) {
+    $gameParty.requestMotionRefresh();
+    if (this.isTpb() && timeActive) {
+        this.updateTpb();
+    }
+    if (!this._subject) {
+        this._subject = this.getNextSubject();
+    }
+    if (this._subject) {
+        this.processTurn();
 
+        //add
+        await new Promise(resolve => setTimeout(resolve, 500));
+        this._actionBattlers.shift();
+
+    } else if (!this.isTpb()) {
+        this.endTurn();
+    }
+};
+BattleManager.getNextSubject = function() {
+    // for (;;) {
+    // const battler = this._actionBattlers.shift();
+    for (let i = 0;;i++) {
+        const battler = this._actionBattlers[i];
+        if (!battler) {
+            return null;
+        }
+        if (battler.isBattleMember() && battler.isAlive()) {
+            return battler;
+        }
+    }
+};
 BattleManager.startBattle = function () {
     this._phase = "start";
     $gameSystem.onBattleStart();
@@ -213,11 +246,9 @@ Sprite_myActor.prototype.drawBorder= function () {
 // 创建速度窗口
 Window_Speed.prototype.refresh = function () {
     if (this._innerChildren.length !== BattleManager._actionBattlers.length) {
-        if (this._innerChildren.length > BattleManager._actionBattlers.length) {
-            var children = this._innerChildren;
-            for (var i = 0; i < children.length; i++) {
-                this._innerChildren.shift(i).destroy();
-            }
+        let children_length = this._innerChildren.length;
+        for (var i = 0; i < children_length; i++) {
+            this._innerChildren.shift(i).destroy();
         }
         let length = BattleManager._actionBattlers.length;
         for (const actionBattler of BattleManager._actionBattlers) {
@@ -230,6 +261,7 @@ Window_Speed.prototype.refresh = function () {
         let spacingX = ImageManager.faceWidth * 0.5 * scale * 1.5
         let x = (Graphics.boxWidth - spacingX * length) / 2;
         let y = this.innerHeight / 2;
+        let firstFlag = true
         for (const actionBattler of BattleManager._actionBattlers) {
             // 死了就不画了
             if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
@@ -238,8 +270,8 @@ Window_Speed.prototype.refresh = function () {
             if (actionBattler._actorId) {
                 let spriteActor = new Sprite_myActor(actionBattler)
                 spriteActor.setFrame((actionBattler._faceIndex % 4) * ImageManager.faceWidth + ImageManager.faceWidth / 4, Math.floor(actionBattler._faceIndex / 4) * ImageManager.faceHeight + ImageManager.faceHeight / 4, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5)
-                spriteActor.scale.x = scale;
-                spriteActor.scale.y = scale;
+                spriteActor.scale.x = firstFlag ? 0.7 : scale;
+                spriteActor.scale.y = firstFlag ? 0.7 : scale;
                 spriteActor.x = x;
                 spriteActor.y = y;
                 spriteActor.drawBorder()
@@ -247,14 +279,15 @@ Window_Speed.prototype.refresh = function () {
             } else {
                 let spriteEnemy = new Sprite_myEnemy(actionBattler)
                 spriteEnemy.setFrame(0, 0, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5);
-                spriteEnemy.scale.x = scale;
-                spriteEnemy.scale.y = scale;
+                spriteEnemy.scale.x = firstFlag ? 0.7 : scale;
+                spriteEnemy.scale.y = firstFlag ? 0.7 : scale;
                 spriteEnemy.x = x;
                 spriteEnemy.y = y;
                 spriteEnemy.drawBorder()
                 this.addInnerChild(spriteEnemy);
             }
             x += spacingX;
+            firstFlag = false
         }
     }
 
@@ -325,3 +358,6 @@ Scene_Battle.prototype.update = function () {
         this._speedWindow.refresh();
     }
 }
+
+
+})()
