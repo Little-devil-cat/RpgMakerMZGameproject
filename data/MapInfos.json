@@ -3,7 +3,8 @@ null,
 {"id":1,"expanded":true,"name":"小镇（日）","order":1,"parentId":0,"scrollX":764.8888888888889,"scrollY":504.44444444444446},
 {"id":2,"expanded":false,"name":"测试地图","order":2,"parentId":1,"scrollX":764.8888888888889,"scrollY":510.6666666666667},
 {"id":3,"expanded":false,"name":"公寓","order":4,"parentId":1,"scrollX":764.8888888888889,"scrollY":503.55555555555554},
-{"id":4,"expanded":false,"name":"医院某处","order":3,"parentId":1,"scrollX":772,"scrollY":896.4444444444445},
+{"id":4,"expanded":false,"name":"医院某处","order":3,"parentId":1,"scrollX":764.8888888888889,"scrollY":1025.3333333333333},
 {"id":5,"expanded":true,"name":"破败的旧工业区","order":5,"parentId":1,"scrollX":764.8888888888889,"scrollY":503.55555555555554},
-{"id":6,"expanded":false,"name":"破旧的医院","order":6,"parentId":5,"scrollX":882.2222222222222,"scrollY":545.3333333333334}
+{"id":6,"expanded":true,"name":"破旧的医院","order":6,"parentId":5,"scrollX":860.8888888888889,"scrollY":503.55555555555554},
+{"id":7,"expanded":false,"name":"世界地图1","order":7,"parentId":0,"scrollX":764.8888888888889,"scrollY":503.55555555555554}
 ]
