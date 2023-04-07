@@ -262,6 +262,13 @@
         }
     }
 
+    //检查是否满足强化条件
+    DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
+        return combatInfo.isWeapon && (matType === PluginPara['weaponComponentTypeName'] || matType === PluginPara['weaponMaterialTypeName'])
+        || 
+        (!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName']));
+    }
+
     //升级武器/护甲 该函数为强化主要调用函数
     DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
@@ -269,11 +276,7 @@
         let materialInfo = this.getMaterialInfo(material);
         let matType = materialInfo.MaterialType;
 
-        if(combatInfo.isWeapon 
-            && (matType === PluginPara['weaponComponentTypeName'] 
-            || matType === PluginPara['weaponMaterialTypeName'])
-        || (!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName']))
-        ){
+        if(this.reinforceCheck(combatInfo, matType)){
             this.CombatItemIncrease(newCombatItem, materialInfo);
         }else{
             console.log("物品和材料不匹配");
