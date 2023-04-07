@@ -12,6 +12,12 @@
  * <REINFORCE MATERIAL>
  * type = 强化素材类型  该行填入的关键字在插件参数中可自定义
  * multiplier = 强化倍率  该行在type为武器强化素材或装备强化素材时有效，分别为武器强化一次后物理攻击力和魔法攻击力变化和护甲强化一次后物理防御力和魔法防御力变化
+ * 当type为weaponComponentTypeName时添加以下参数
+ * <COMPONENT STATE>
+ * code = 特性ID
+ * dataId = 特性中分项ID
+ * value = 特性值
+ * </COMPONENT STATE>
  * </REINFORCE MATERIAL>
  * 
  * =>为可强化武器/装备添加强化次数
@@ -36,7 +42,7 @@
  * @desc 用于定义武器强化配件变量名称
  * @default weaponComponent
  * 
- * @param emptySkillIndex
+ * @param emptySkill
  * @text 空技能栏位变量自定义
  * @type number
  * @desc 用于定义空技能栏位的位置
@@ -56,36 +62,97 @@
  */
 (() => {
     PluginPara = PluginManager.parameters('Reinforce');
-
-    DataManager.Reinforce = {
-        CombatItem : {
-            isWeapon : Boolean,
-            MaterialUpdateTime : {
-                MaxTimes : Number,
-                MinTimes : Number
-            },
-            ComponentUpdateTime : {
-                MaxTimes : Number,
-                MinTimes : Number
-            }
-        },
-        Material : {
-            MaterialType : String,
-            MaterialMultiplier : Number,
-            Traits : {
-                code : Number,
-                dataId : Number,
-                value : Number
-            }
+    DataManager.Reinforce = {}
+    
+    class CombatItem {
+        isWeapon = true;
+        MaterialUpdateTime = {
+            MaxTimes : 0,
+            MinTimes : 0
+        }
+        ComponentUpdateTime = {
+            MaxTimes : 0,
+            MinTimes : 0
         }
     }
+
+    class Material {
+        MaterialType = "";
+        MaterialMultiplier = 1;
+        Traits = {
+            code : 0,
+            dataId : 0,
+            value : 0
+        }
+    }
+
+    //修改存档逻辑
+    DataManager.makeSaveContents = function(){
+        // A save data does not contain $gameTemp, $gameMessage, and $gameTroop.
+        // const contents = {};
+        // contents.system = $gameSystem;
+        // contents.screen = $gameScreen;
+        // contents.timer = $gameTimer;
+        // contents.switches = $gameSwitches;
+        // contents.variables = $gameVariables;
+        // contents.selfSwitches = $gameSelfSwitches;
+        // contents.actors = $gameActors;
+        // contents.party = $gameParty;
+        // contents.map = $gameMap;
+        // contents.player = $gamePlayer;
+        // return contents;
+        const contents = {};
+        contents.system = $gameSystem;
+        contents.screen = $gameScreen;
+        contents.timer = $gameTimer;
+        contents.switches = $gameSwitches;
+        contents.variables = $gameVariables;
+        contents.selfSwitches = $gameSelfSwitches;
+        contents.actors = $gameActors;
+        contents.party = $gameParty;
+        contents.map = $gameMap;
+        contents.player = $gamePlayer;
+        contents.weapon = $dataWeapons;
+        contents.armour = $dataArmors;
+        return contents;
+    }
+
+    DataManager.extractSaveContents = function(contents) {
+        // $gameSystem = contents.system;
+        // $gameScreen = contents.screen;
+        // $gameTimer = contents.timer;
+        // $gameSwitches = contents.switches;
+        // $gameVariables = contents.variables;
+        // $gameSelfSwitches = contents.selfSwitches;
+        // $gameActors = contents.actors;
+        // $gameParty = contents.party;
+        // $gameMap = contents.map;
+        // $gamePlayer = contents.player;
+        $gameSystem = contents.system;
+        $gameScreen = contents.screen;
+        $gameTimer = contents.timer;
+        $gameSwitches = contents.switches;
+        $gameVariables = contents.variables;
+        $gameSelfSwitches = contents.selfSwitches;
+        $gameActors = contents.actors;
+        $gameParty = contents.party;
+        $gameMap = contents.map;
+        $gamePlayer = contents.player;
+        $dataWeapons = contents.weapon;
+        $dataArmors = contents.armour;
+    };
 
     //得到物品中对素材的自定义内容
     DataManager.Reinforce.getMaterialInfo = function(item){
         let notes = item.note.split(/[\r\n]+/);
-        let itemInfo = new this.Reinforce.Material();
+        let itemInfo = new Material();
         let isMaterials = false;
         let isComponent = false;
+
+        let weaponComponentReg = new RegExp('type = ' + PluginPara['weaponComponentTypeName']);
+        let weaponMaterialReg = new RegExp('type = ' + PluginPara['weaponMaterialTypeName']);
+        let armourElementReg = new RegExp('type = ' + PluginPara['armourElementTypeName']);
+
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
         {
             let line = notes[noteIndex];
@@ -99,23 +166,22 @@
                 }else if(line.match(/<\/COMPONENT STATE>/i)){
                     isComponent = false;
                 }else if(isComponent){
-                    if(line.match(/(code\s?=\s?)([0-9]*)/i)){
-                        itemInfo.Traits.code = line.match(/(code\s?=\s?)([0-9]*)/i)[2];
-                    }else if(line.match(/(dataId\s?=\s?)([0-9]*)/i)){
-                        itemInfo.Traits.dataId = line.match(/(dataId\s?=\s?)([0-9]*)/i)[2];
-                    }else if(line.match(/(value\s?=\s?)([0-9]*)/i)){
-                        itemInfo.Traits.value = line.match(/(value\s?=\s?)([0-9]*)/i)[2];
+                    if(line.match(/(code\s*=\s*)([0-9]*)/i)){
+                        itemInfo.Traits.code = Number(line.match(/(code\s*=\s*)([0-9]*)/i)[2]);
+                    }else if(line.match(/(dataId\s*=\s*)([0-9]*)/i)){
+                        itemInfo.Traits.dataId = Number(line.match(/(dataId\s*=\s*)([0-9]*)/i)[2]);
+                    }else if(line.match(/(value\s*=\s*)([0-9]*)/i)){
+                        itemInfo.Traits.value = Number(line.match(/(value\s*=\s*)([0-9]*)/i)[2]);
                     }
-                }else if(line.match("type\s?=\s?" + PluginPara['weaponComponentTypeName']+ "/i")){
+                }else if(weaponComponentReg.test(line)){
                     itemInfo.MaterialType = PluginPara['weaponComponentTypeName'];
-                }else if(line.match("/type\s?=\s?" + PluginPara['weaponMaterialTypeName']+ "/i")){
+                }else if(weaponMaterialReg.test(line)){
                     itemInfo.MaterialType = PluginPara['weaponMaterialTypeName'];
-                }else if(line.match("/type\s?=\s?" + PluginPara['armourElementTypeName'] + "/i")){
+                }else if(armourElementReg.test(line)){
                     itemInfo.MaterialType = PluginPara['armourElementTypeName'];
                 }
             }
         }
-        console.log(itemInfo.MaterialType);
         return itemInfo;
     }
 
@@ -123,7 +189,7 @@
     DataManager.Reinforce.getCombatItemInfo = function(item, isWeapon){
         let notes = item.note.split(/[\r\n]+/);
         let isMat = false;
-        let itemInfo = new this.Reinforce.CombatItem();
+        let itemInfo = new CombatItem();
         itemInfo.isWeapon = isWeapon;
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
         {
@@ -168,11 +234,12 @@
     DataManager.Reinforce.modifyTraits = function(newCombatItem, traitsInfo){
         let isModified = false;
         for(let element of newCombatItem.traits){
-            if(element.code === PluginPara['emptySkillIndex']){
+            if(element.code === 43 && element.dataId === Number(PluginPara['emptySkill'])){
                 element.code = traitsInfo.code;
                 element.dataId = traitsInfo.dataId;
                 element.value = traitsInfo.value;
                 isModified = true;
+                break;
             }
         }
         return isModified;
@@ -182,7 +249,7 @@
     DataManager.Reinforce.CombatItemIncrease = function(newCombatItem, materialInfo){
         switch(materialInfo.MaterialType){
             case PluginPara['weaponComponentTypeName']:
-                this.modifyTraits(newCombatItem, materialInfo);
+                this.modifyTraits(newCombatItem, materialInfo.Traits);
                 break;
             case PluginPara['weaponMaterialTypeName']:
                 newCombatItem.params[2] *= materialInfo.MaterialMultiplier;
@@ -195,14 +262,18 @@
         }
     }
 
-    //升级武器/护甲
+    //升级武器/护甲 该函数为强化主要调用函数
     DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
         let materialInfo = this.getMaterialInfo(material);
+        let matType = materialInfo.MaterialType;
 
-        if(combatInfo.isWeapon && (materialInfo === PluginPara['weaponComponentTypeName'] || materialInfo === PluginPara['weaponMaterialTypeName'])
-        || (!combatInfo.isWeapon && (materialInfo === PluginPara['armourElementTypeName']))){
+        if(combatInfo.isWeapon 
+            && (matType === PluginPara['weaponComponentTypeName'] 
+            || matType === PluginPara['weaponMaterialTypeName'])
+        || (!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName']))
+        ){
             this.CombatItemIncrease(newCombatItem, materialInfo);
         }else{
             console.log("物品和材料不匹配");
