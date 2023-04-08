@@ -33,7 +33,7 @@
  * (该内容与上文提到的技能栏6号技能有关，在maxTimes参数中设置武器/装备上添加了多少个该技能，该项决定该武器最大配件数量)
  * <COMPONENT UPDATE>
  * maxTimes = 最大强化次数
- * minTimes = 0
+ * nowTimes = 0
  * </COMPONENT UPDATE>
  * 
  * @param weaponComponentTypeName
@@ -66,13 +66,15 @@
     
     class CombatItem {
         isWeapon = true;
-        MaterialUpdateTime = {
+        MaterialUpdate = {
             MaxTimes : 0,
-            MinTimes : 0
+            NowTimes : 0,
+            NowTimeDescIndex : 0
         }
-        ComponentUpdateTime = {
+        ComponentUpdate = {
             MaxTimes : 0,
-            MinTimes : 0
+            NowTimes : 0,
+            NowTimeDescIndex : 0
         }
     }
 
@@ -204,15 +206,17 @@
                 isCom = false;
             }else if(isMat){
                 if(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)){
-                    itemInfo.MaterialUpdateTime.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.MaterialUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
                 }else if(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)){
-                    itemInfo.MaterialUpdateTime.MinTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.MaterialUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.MaterialUpdate.NowTimeDescIndex = noteIndex;
                 }
             }else if(isCom){
                 if(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)){
-                    itemInfo.ComponentUpdateTime.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.ComponentUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
                 }else if(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)){
-                    itemInfo.ComponentUpdateTime.MinTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.ComponentUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.ComponentUpdate.NowTimeDescIndex = noteIndex;
                 }
             }
         }
@@ -245,28 +249,48 @@
         return isModified;
     }
 
+    DataManager.Reinforce.noteWriteBack = function(item, objectName, objectLineIndex, value){
+        let notes = item.note.split(/[\r\n]+/);
+        notes[objectLineIndex] = objectName + " = " + value;
+        let newNote = notes.join("\n");
+        item.note = newNote;
+    }
+
     //根据材料信息升级新复制的武器/护甲
-    DataManager.Reinforce.CombatItemIncrease = function(newCombatItem, materialInfo){
+    DataManager.Reinforce.CombatItemIncrease = function(newCombatItem, materialInfo, combatInfo){
         switch(materialInfo.MaterialType){
             case PluginPara['weaponComponentTypeName']:
                 this.modifyTraits(newCombatItem, materialInfo.Traits);
+                combatInfo.ComponentUpdate.NowTimes++;
+                this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.ComponentUpdate.NowTimeDescIndex, combatInfo.ComponentUpdate.NowTimes);
                 break;
             case PluginPara['weaponMaterialTypeName']:
                 newCombatItem.params[2] *= materialInfo.MaterialMultiplier;
                 newCombatItem.params[4] *= materialInfo.MaterialMultiplier;
+                combatInfo.MaterialUpdate.NowTimes++;
+                this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
             case PluginPara['armourElementTypeName']:
                 newCombatItem.params[3] *= materialInfo.MaterialMultiplier;
                 newCombatItem.params[5] *= materialInfo.MaterialMultiplier;
+                combatInfo.MaterialUpdate.NowTimes++;
+                this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
         }
     }
 
     //检查是否满足强化条件
     DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
-        return combatInfo.isWeapon && (matType === PluginPara['weaponComponentTypeName'] || matType === PluginPara['weaponMaterialTypeName'])
-        || 
-        (!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName']));
+        if(combatInfo.isWeapon){
+            if(matType === PluginPara['weaponComponentTypeName']){
+                return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
+            }else if(matType === PluginPara['weaponMaterialTypeName']){
+                return combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes;
+            }
+        }else if(!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName'])){
+            return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
+        }
+        return false;
     }
 
     //升级武器/护甲 该函数为强化主要调用函数
@@ -277,9 +301,9 @@
         let matType = materialInfo.MaterialType;
 
         if(this.reinforceCheck(combatInfo, matType)){
-            this.CombatItemIncrease(newCombatItem, materialInfo);
+            this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
         }else{
-            console.log("物品和材料不匹配");
+            console.log("物品或材料未满足强化条件");
         }
     }
 })()
