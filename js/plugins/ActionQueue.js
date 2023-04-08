@@ -93,38 +93,38 @@ BattleManager.startTurn = function () {
     }
 };
 //为了标注谁在行动，把删除actionBattler移到行动后
-BattleManager.updateTurn = async function(timeActive) {
-    $gameParty.requestMotionRefresh();
-    if (this.isTpb() && timeActive) {
-        this.updateTpb();
-    }
-    if (!this._subject) {
-        this._subject = this.getNextSubject();
-    }
-    if (this._subject) {
-        this.processTurn();
-
-        //add
-        await new Promise(resolve => setTimeout(resolve, 500));
-        this._actionBattlers.shift();
-
-    } else if (!this.isTpb()) {
-        this.endTurn();
-    }
-};
-BattleManager.getNextSubject = function() {
-    // for (;;) {
-    // const battler = this._actionBattlers.shift();
-    for (let i = 0;;i++) {
-        const battler = this._actionBattlers[i];
-        if (!battler) {
-            return null;
-        }
-        if (battler.isBattleMember() && battler.isAlive()) {
-            return battler;
-        }
-    }
-};
+// BattleManager.updateTurn = async function(timeActive) {
+//     $gameParty.requestMotionRefresh();
+//     if (this.isTpb() && timeActive) {
+//         this.updateTpb();
+//     }
+//     if (!this._subject) {
+//         this._subject = this.getNextSubject();
+//     }
+//     if (this._subject) {
+//         this.processTurn();
+//
+//         //add
+//         await new Promise(resolve => setTimeout(resolve, 500));
+//         this._actionBattlers.shift();
+//
+//     } else if (!this.isTpb()) {
+//         this.endTurn();
+//     }
+// };
+// BattleManager.getNextSubject = function() {
+//     // for (;;) {
+//     // const battler = this._actionBattlers.shift();
+//     for (let i = 0;;i++) {
+//         const battler = this._actionBattlers[i];
+//         if (!battler) {
+//             return null;
+//         }
+//         if (battler.isBattleMember() && battler.isAlive()) {
+//             return battler;
+//         }
+//     }
+// };
 BattleManager.startBattle = function () {
     this._phase = "start";
     $gameSystem.onBattleStart();
@@ -244,18 +244,20 @@ Sprite_myActor.prototype.drawBorder= function () {
 }
 //=====================================================================================
 // 创建速度窗口
-Window_Speed.prototype.refresh = function () {
+Window_Speed.prototype.refresh = async function () {
     if (this._innerChildren.length !== BattleManager._actionBattlers.length) {
+        if (this._innerChildren.length > BattleManager._actionBattlers.length) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
         let children_length = this._innerChildren.length;
         for (var i = 0; i < children_length; i++) {
-            this._innerChildren.shift(i).destroy();
+            this._innerChildren.shift().destroy();
         }
         let length = BattleManager._actionBattlers.length;
         for (const actionBattler of BattleManager._actionBattlers) {
             if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
                 length--;
             }
-
         }
         let scale = JSON.parse(params_action_queue['scale']);
         let spacingX = ImageManager.faceWidth * 0.5 * scale * 1.5
@@ -278,7 +280,7 @@ Window_Speed.prototype.refresh = function () {
                 this.addInnerChild(spriteActor);
             } else {
                 let spriteEnemy = new Sprite_myEnemy(actionBattler)
-                spriteEnemy.setFrame(0, 0, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5);
+                spriteEnemy.setFrame(ImageManager.faceWidth * 0.25, 0, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5);
                 spriteEnemy.scale.x = firstFlag ? 0.7 : scale;
                 spriteEnemy.scale.y = firstFlag ? 0.7 : scale;
                 spriteEnemy.x = x;
