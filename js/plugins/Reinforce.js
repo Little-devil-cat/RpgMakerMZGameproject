@@ -312,21 +312,28 @@
         return this.combatItemCheck(combatInfo) && this.isMatch(combatInfo, matType);
     }
 
+    //更新背包，包含剔除旧物品、增加新物品、删除强化材料
+    DataManager.Reinforce.updateBackpack = function(oldItem, newItem, material){
+        $gameParty.loseItem(oldItem, 1, true);
+        $gameParty.gainItem(newItem, 1, false);
+        $gameParty.loseItem(material, 1);
+    }
+
     //返回可强化装备和武器列表
     DataManager.Reinforce.CombatItemList = function(){
         let CombatItemList = {}
         CombatItemList.weaponList = new Array();
         CombatItemList.armorList = new Array();
-        for(let element of $dataWeapons){
-            let info = this.getCombatItemInfo(element, true);
+        for(const key in $gameParty._weapons){
+            let info = this.getCombatItemInfo($dataWeapons[key], true);
             if(this.combatItemCheck(info)){
-                CombatItemList.weaponList.push(element);
+                CombatItemList.weaponList.push($dataWeapons[key]);
             }
         }
-        for(let element of $dataArmors){
-            let info = this.getCombatItemInfo(element, false);
+        for(const key in $gameParty._armors){
+            let info = this.getCombatItemInfo($dataArmors[key], false);
             if(this.combatItemCheck(info)){
-                CombatItemList.armorList.push(element);
+                CombatItemList.armorList.push($dataArmors[key]);
             }
         }
         return CombatItemList;
@@ -335,15 +342,15 @@
     //返回强化材料列表
     DataManager.Reinforce.MaterialList = function(){
         let MaterialList = new Array();
-        for(let element of $dataItems){
-            if(this.MaterialCheck(element)){
-                MaterialList.push(element);
+        for(const key in $gameParty._items){
+            if(this.MaterialCheck($dataItems[key])){
+                MaterialList.push($dataItems[key]);
             }
         }
         return MaterialList;
     }
 
-    //升级武器/护甲 该函数为强化主要调用函数
+    //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功
     DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
@@ -352,8 +359,11 @@
 
         if(this.reinforceCheck(combatInfo, matType)){
             this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
+            this.updateBackpack(combatItem, newCombatItem, isWeapon, material);
+            return true;
         }else{
             console.log("物品或材料未满足强化条件");
+            return false;
         }
     }
 })()
