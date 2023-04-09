@@ -146,6 +146,7 @@
 
     //得到物品中对素材的自定义内容
     DataManager.Reinforce.getMaterialInfo = function(item){
+        if(item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let itemInfo = new Material();
         let isMaterials = false;
@@ -189,8 +190,10 @@
 
     //得到物品中对武器装备的自定义内容
     DataManager.Reinforce.getCombatItemInfo = function(item, isWeapon){
+        if(item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let isMat = false;
+        let isCom = false;
         let itemInfo = new CombatItem();
         itemInfo.isWeapon = isWeapon;
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
@@ -279,18 +282,65 @@
         }
     }
 
+    //检查该武器/装备是否还能强化
+    DataManager.Reinforce.combatItemCheck = function(combatInfo){
+        if(combatInfo === null) return false;
+        return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0
+        || combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
+    }
+
+    //检查物品是否属于强化物
+    DataManager.Reinforce.MaterialCheck = function(item){
+        if(item === null) return false;
+        let info = this.getMaterialInfo(item);
+        return info.MaterialType === PluginPara['weaponComponentTypeName'] 
+            || info.MaterialType === PluginPara['weaponMaterialTypeName']
+            || info.MaterialType === PluginPara['armourElementTypeName'];
+    }
+
+    //检查该武器/装备与材料是否匹配
+    DataManager.Reinforce.isMatch = function(combatInfo, matType){
+        if(combatInfo.isWeapon){
+            return matType === PluginPara['weaponComponentTypeName'] || matType === PluginPara['weaponMaterialTypeName']
+        }else{
+            return matType === PluginPara['armourElementTypeName'];
+        }
+    }
+    
     //检查是否满足强化条件
     DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
-        if(combatInfo.isWeapon){
-            if(matType === PluginPara['weaponComponentTypeName']){
-                return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
-            }else if(matType === PluginPara['weaponMaterialTypeName']){
-                return combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes;
+        return this.combatItemCheck(combatInfo) && this.isMatch(combatInfo, matType);
+    }
+
+    //返回可强化装备和武器列表
+    DataManager.Reinforce.CombatItemList = function(){
+        let CombatItemList = {}
+        CombatItemList.weaponList = new Array();
+        CombatItemList.armorList = new Array();
+        for(let element of $dataWeapons){
+            let info = this.getCombatItemInfo(element, true);
+            if(this.combatItemCheck(info)){
+                CombatItemList.weaponList.push(element);
             }
-        }else if(!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName'])){
-            return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
         }
-        return false;
+        for(let element of $dataArmors){
+            let info = this.getCombatItemInfo(element, false);
+            if(this.combatItemCheck(info)){
+                CombatItemList.armorList.push(element);
+            }
+        }
+        return CombatItemList;
+    }
+
+    //返回强化材料列表
+    DataManager.Reinforce.MaterialList = function(){
+        let MaterialList = new Array();
+        for(let element of $dataItems){
+            if(this.MaterialCheck(element)){
+                MaterialList.push(element);
+            }
+        }
+        return MaterialList;
     }
 
     //升级武器/护甲 该函数为强化主要调用函数
