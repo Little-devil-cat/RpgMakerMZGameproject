@@ -146,6 +146,7 @@
 
     //得到物品中对素材的自定义内容
     DataManager.Reinforce.getMaterialInfo = function(item){
+        if(item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let itemInfo = new Material();
         let isMaterials = false;
@@ -189,8 +190,10 @@
 
     //得到物品中对武器装备的自定义内容
     DataManager.Reinforce.getCombatItemInfo = function(item, isWeapon){
+        if(item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let isMat = false;
+        let isCom = false;
         let itemInfo = new CombatItem();
         itemInfo.isWeapon = isWeapon;
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
@@ -265,35 +268,89 @@
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.ComponentUpdate.NowTimeDescIndex, combatInfo.ComponentUpdate.NowTimes);
                 break;
             case PluginPara['weaponMaterialTypeName']:
-                newCombatItem.params[2] *= materialInfo.MaterialMultiplier;
-                newCombatItem.params[4] *= materialInfo.MaterialMultiplier;
+                newCombatItem.params[2] = Math.round(newCombatItem.params[2] * materialInfo.MaterialMultiplier);
+                newCombatItem.params[4] = Math.round(newCombatItem.params[4] * materialInfo.MaterialMultiplier);
                 combatInfo.MaterialUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
             case PluginPara['armourElementTypeName']:
-                newCombatItem.params[3] *= materialInfo.MaterialMultiplier;
-                newCombatItem.params[5] *= materialInfo.MaterialMultiplier;
+                newCombatItem.params[3] = Math.round(newCombatItem.params[3] * materialInfo.MaterialMultiplier);
+                newCombatItem.params[5] = Math.round(newCombatItem.params[5] * materialInfo.MaterialMultiplier);
                 combatInfo.MaterialUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
         }
     }
 
-    //检查是否满足强化条件
-    DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
-        if(combatInfo.isWeapon){
-            if(matType === PluginPara['weaponComponentTypeName']){
-                return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
-            }else if(matType === PluginPara['weaponMaterialTypeName']){
-                return combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes;
-            }
-        }else if(!combatInfo.isWeapon && (matType === PluginPara['armourElementTypeName'])){
-            return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes;
-        }
-        return false;
+    //检查该武器/装备是否还能强化
+    DataManager.Reinforce.combatItemCheck = function(combatInfo){
+        if(combatInfo === null) return false;
+        return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0
+        || combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
     }
 
-    //升级武器/护甲 该函数为强化主要调用函数
+    //检查物品是否属于强化物
+    DataManager.Reinforce.MaterialCheck = function(item){
+        if(item === null) return false;
+        let info = this.getMaterialInfo(item);
+        return info.MaterialType === PluginPara['weaponComponentTypeName'] 
+            || info.MaterialType === PluginPara['weaponMaterialTypeName']
+            || info.MaterialType === PluginPara['armourElementTypeName'];
+    }
+
+    //检查该武器/装备与材料是否匹配
+    DataManager.Reinforce.isMatch = function(combatInfo, matType){
+        if(combatInfo.isWeapon){
+            return matType === PluginPara['weaponComponentTypeName'] || matType === PluginPara['weaponMaterialTypeName']
+        }else{
+            return matType === PluginPara['armourElementTypeName'];
+        }
+    }
+    
+    //检查是否满足强化条件
+    DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
+        return this.combatItemCheck(combatInfo) && this.isMatch(combatInfo, matType);
+    }
+
+    //更新背包，包含剔除旧物品、增加新物品、删除强化材料
+    DataManager.Reinforce.updateBackpack = function(oldItem, newItem, material){
+        $gameParty.loseItem(oldItem, 1, true);
+        $gameParty.gainItem(newItem, 1, false);
+        $gameParty.loseItem(material, 1);
+    }
+
+    //返回背包内可强化装备和武器列表
+    DataManager.Reinforce.CombatItemList = function(){
+        let CombatItemList = {}
+        CombatItemList.weaponList = new Array();
+        CombatItemList.armorList = new Array();
+        for(const key in $gameParty._weapons){
+            let info = this.getCombatItemInfo($dataWeapons[key], true);
+            if(this.combatItemCheck(info)){
+                CombatItemList.weaponList.push($dataWeapons[key]);
+            }
+        }
+        for(const key in $gameParty._armors){
+            let info = this.getCombatItemInfo($dataArmors[key], false);
+            if(this.combatItemCheck(info)){
+                CombatItemList.armorList.push($dataArmors[key]);
+            }
+        }
+        return CombatItemList;
+    }
+
+    //返回背包内强化材料列表
+    DataManager.Reinforce.MaterialList = function(){
+        let MaterialList = new Array();
+        for(const key in $gameParty._items){
+            if(this.MaterialCheck($dataItems[key])){
+                MaterialList.push($dataItems[key]);
+            }
+        }
+        return MaterialList;
+    }
+
+    //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功
     DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
@@ -302,8 +359,11 @@
 
         if(this.reinforceCheck(combatInfo, matType)){
             this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
+            this.updateBackpack(combatItem, newCombatItem, isWeapon, material);
+            return true;
         }else{
             console.log("物品或材料未满足强化条件");
+            return false;
         }
     }
 })()
