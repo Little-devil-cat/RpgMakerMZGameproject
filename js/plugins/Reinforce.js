@@ -268,14 +268,14 @@
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.ComponentUpdate.NowTimeDescIndex, combatInfo.ComponentUpdate.NowTimes);
                 break;
             case PluginPara['weaponMaterialTypeName']:
-                newCombatItem.params[2] *= materialInfo.MaterialMultiplier;
-                newCombatItem.params[4] *= materialInfo.MaterialMultiplier;
+                newCombatItem.params[2] = Math.round(newCombatItem.params[2] * materialInfo.MaterialMultiplier);
+                newCombatItem.params[4] = Math.round(newCombatItem.params[4] * materialInfo.MaterialMultiplier);
                 combatInfo.MaterialUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
             case PluginPara['armourElementTypeName']:
-                newCombatItem.params[3] *= materialInfo.MaterialMultiplier;
-                newCombatItem.params[5] *= materialInfo.MaterialMultiplier;
+                newCombatItem.params[3] = Math.round(newCombatItem.params[3] * materialInfo.MaterialMultiplier);
+                newCombatItem.params[5] = Math.round(newCombatItem.params[5] * materialInfo.MaterialMultiplier);
                 combatInfo.MaterialUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.MaterialUpdate.NowTimeDescIndex, combatInfo.MaterialUpdate.NowTimes);
                 break;
@@ -319,7 +319,7 @@
         $gameParty.loseItem(material, 1);
     }
 
-    //返回可强化装备和武器列表
+    //返回背包内可强化装备和武器列表
     DataManager.Reinforce.CombatItemList = function(){
         let CombatItemList = {}
         CombatItemList.weaponList = new Array();
@@ -339,7 +339,7 @@
         return CombatItemList;
     }
 
-    //返回强化材料列表
+    //返回背包内强化材料列表
     DataManager.Reinforce.MaterialList = function(){
         let MaterialList = new Array();
         for(const key in $gameParty._items){
