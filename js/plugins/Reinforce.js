@@ -61,7 +61,7 @@
  * @default armourElement
  */
 (() => {
-    PluginPara = PluginManager.parameters('Reinforce');
+    const PluginPara = PluginManager.parameters('Reinforce');
     DataManager.Reinforce = {}
     
     class CombatItem {
@@ -282,6 +282,11 @@
         }
     }
 
+    //检查该战斗物品是装备还是武器
+    DataManager.Reinforce.isWeaponCheck = function(combatItem){
+        return $dataItems[combatItem.id].name === combatItem.name;
+    }
+
     //检查该武器/装备是否还能强化
     DataManager.Reinforce.combatItemCheck = function(combatInfo){
         if(combatInfo === null) return false;
@@ -351,7 +356,8 @@
     }
 
     //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功
-    DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
+    DataManager.Reinforce.reinforce = function(combatItem, material){
+        let isWeapon = this.isWeaponCheck(combatItem);
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
         let materialInfo = this.getMaterialInfo(material);
