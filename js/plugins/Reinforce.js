@@ -59,22 +59,23 @@
  * @type string
  * @desc 用于定义装备强化素材变量名称
  * @default armourElement
+ *
  */
 (() => {
-    PluginPara = PluginManager.parameters('Reinforce');
+    const PluginPara = PluginManager.parameters('Reinforce');
     DataManager.Reinforce = {}
-    
+
     class CombatItem {
         isWeapon = true;
         MaterialUpdate = {
-            MaxTimes : 0,
-            NowTimes : 0,
-            NowTimeDescIndex : 0
+            MaxTimes: 0,
+            NowTimes: 0,
+            NowTimeDescIndex: 0
         }
         ComponentUpdate = {
-            MaxTimes : 0,
-            NowTimes : 0,
-            NowTimeDescIndex : 0
+            MaxTimes: 0,
+            NowTimes: 0,
+            NowTimeDescIndex: 0
         }
     }
 
@@ -82,14 +83,14 @@
         MaterialType = "";
         MaterialMultiplier = 1;
         Traits = {
-            code : 0,
-            dataId : 0,
-            value : 0
+            code: 0,
+            dataId: 0,
+            value: 0
         }
     }
 
     //修改存档逻辑
-    DataManager.makeSaveContents = function(){
+    DataManager.makeSaveContents = function () {
         // A save data does not contain $gameTemp, $gameMessage, and $gameTroop.
         // const contents = {};
         // contents.system = $gameSystem;
@@ -119,7 +120,7 @@
         return contents;
     }
 
-    DataManager.extractSaveContents = function(contents) {
+    DataManager.extractSaveContents = function (contents) {
         // $gameSystem = contents.system;
         // $gameScreen = contents.screen;
         // $gameTimer = contents.timer;
@@ -145,8 +146,8 @@
     };
 
     //得到物品中对素材的自定义内容
-    DataManager.Reinforce.getMaterialInfo = function(item){
-        if(item === null) return null;
+    DataManager.Reinforce.getMaterialInfo = function (item) {
+        if (item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let itemInfo = new Material();
         let isMaterials = false;
@@ -156,31 +157,30 @@
         let weaponMaterialReg = new RegExp('type = ' + PluginPara['weaponMaterialTypeName']);
         let armourElementReg = new RegExp('type = ' + PluginPara['armourElementTypeName']);
 
-        for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
-        {
+        for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
             let line = notes[noteIndex];
-            if(line.match(/<REINFORCE MATERIAL>/i)){
+            if (line.match(/<REINFORCE MATERIAL>/i)) {
                 isMaterials = true;
-            }else if(line.match(/<\/REINFORCE MATERIAL>/i)){
+            } else if (line.match(/<\/REINFORCE MATERIAL>/i)) {
                 isMaterials = false;
-            }else if(isMaterials){
-                if(line.match(/<COMPONENT STATE>/i)){
+            } else if (isMaterials) {
+                if (line.match(/<COMPONENT STATE>/i)) {
                     isComponent = true;
-                }else if(line.match(/<\/COMPONENT STATE>/i)){
+                } else if (line.match(/<\/COMPONENT STATE>/i)) {
                     isComponent = false;
-                }else if(isComponent){
-                    if(line.match(/(code\s*=\s*)([0-9]*)/i)){
+                } else if (isComponent) {
+                    if (line.match(/(code\s*=\s*)([0-9]*)/i)) {
                         itemInfo.Traits.code = Number(line.match(/(code\s*=\s*)([0-9]*)/i)[2]);
-                    }else if(line.match(/(dataId\s*=\s*)([0-9]*)/i)){
+                    } else if (line.match(/(dataId\s*=\s*)([0-9]*)/i)) {
                         itemInfo.Traits.dataId = Number(line.match(/(dataId\s*=\s*)([0-9]*)/i)[2]);
-                    }else if(line.match(/(value\s*=\s*)([0-9]*)/i)){
+                    } else if (line.match(/(value\s*=\s*)([0-9]*)/i)) {
                         itemInfo.Traits.value = Number(line.match(/(value\s*=\s*)([0-9]*)/i)[2]);
                     }
-                }else if(weaponComponentReg.test(line)){
+                } else if (weaponComponentReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['weaponComponentTypeName'];
-                }else if(weaponMaterialReg.test(line)){
+                } else if (weaponMaterialReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['weaponMaterialTypeName'];
-                }else if(armourElementReg.test(line)){
+                } else if (armourElementReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['armourElementTypeName'];
                 }
             }
@@ -189,35 +189,34 @@
     }
 
     //得到物品中对武器装备的自定义内容
-    DataManager.Reinforce.getCombatItemInfo = function(item, isWeapon){
-        if(item === null) return null;
+    DataManager.Reinforce.getCombatItemInfo = function (item, isWeapon) {
+        if (item === null) return null;
         let notes = item.note.split(/[\r\n]+/);
         let isMat = false;
         let isCom = false;
         let itemInfo = new CombatItem();
         itemInfo.isWeapon = isWeapon;
-        for (let noteIndex = 0; noteIndex < notes.length; noteIndex++)
-        {
+        for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
             let line = notes[noteIndex];
-            if(line.match(/<MATERIAL UPDATE>/i)){
+            if (line.match(/<MATERIAL UPDATE>/i)) {
                 isMat = true;
-            }else if(line.match(/<\/MATERIAL UPDATE>/i)){
+            } else if (line.match(/<\/MATERIAL UPDATE>/i)) {
                 isMat = false;
-            }else if(line.match(/<COMPONENT UPDATE>/i)){
+            } else if (line.match(/<COMPONENT UPDATE>/i)) {
                 isCom = true;
-            }else if(line.match(/<\/COMPONENT UPDATE>/i)){
+            } else if (line.match(/<\/COMPONENT UPDATE>/i)) {
                 isCom = false;
-            }else if(isMat){
-                if(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)){
+            } else if (isMat) {
+                if (line.match(/(maxTimes\s?=\s?)([0-9]*)/i)) {
                     itemInfo.MaterialUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
-                }else if(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)){
+                } else if (line.match(/(nowTimes\s?=\s?)([0-9]*)/i)) {
                     itemInfo.MaterialUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
                     itemInfo.MaterialUpdate.NowTimeDescIndex = noteIndex;
                 }
-            }else if(isCom){
-                if(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)){
+            } else if (isCom) {
+                if (line.match(/(maxTimes\s?=\s?)([0-9]*)/i)) {
                     itemInfo.ComponentUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
-                }else if(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)){
+                } else if (line.match(/(nowTimes\s?=\s?)([0-9]*)/i)) {
                     itemInfo.ComponentUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
                     itemInfo.ComponentUpdate.NowTimeDescIndex = noteIndex;
                 }
@@ -227,21 +226,21 @@
     }
 
     //通过深拷贝造一个新的武器/护甲，并返回武器/护甲
-    DataManager.Reinforce.DulpulicateCombatItems = function(items, itemInfo){
+    DataManager.Reinforce.DulpulicateCombatItems = function (items, itemInfo) {
         let newItem = JSON.parse(JSON.stringify(items));
-        if(itemInfo.isWeapon){
+        if (itemInfo.isWeapon) {
             $dataWeapons.push(newItem);
-        }else{
+        } else {
             $dataArmors.push(newItem);
         }
         return newItem;
     }
 
     //修改武器的特性信息
-    DataManager.Reinforce.modifyTraits = function(newCombatItem, traitsInfo){
+    DataManager.Reinforce.modifyTraits = function (newCombatItem, traitsInfo) {
         let isModified = false;
-        for(let element of newCombatItem.traits){
-            if(element.code === 43 && element.dataId === Number(PluginPara['emptySkill'])){
+        for (let element of newCombatItem.traits) {
+            if (element.code === 43 && element.dataId === Number(PluginPara['emptySkill'])) {
                 element.code = traitsInfo.code;
                 element.dataId = traitsInfo.dataId;
                 element.value = traitsInfo.value;
@@ -252,7 +251,7 @@
         return isModified;
     }
 
-    DataManager.Reinforce.noteWriteBack = function(item, objectName, objectLineIndex, value){
+    DataManager.Reinforce.noteWriteBack = function (item, objectName, objectLineIndex, value) {
         let notes = item.note.split(/[\r\n]+/);
         notes[objectLineIndex] = objectName + " = " + value;
         let newNote = notes.join("\n");
@@ -260,8 +259,8 @@
     }
 
     //根据材料信息升级新复制的武器/护甲
-    DataManager.Reinforce.CombatItemIncrease = function(newCombatItem, materialInfo, combatInfo){
-        switch(materialInfo.MaterialType){
+    DataManager.Reinforce.CombatItemIncrease = function (newCombatItem, materialInfo, combatInfo) {
+        switch (materialInfo.MaterialType) {
             case PluginPara['weaponComponentTypeName']:
                 this.modifyTraits(newCombatItem, materialInfo.Traits);
                 combatInfo.ComponentUpdate.NowTimes++;
@@ -282,57 +281,62 @@
         }
     }
 
+    //检查该战斗物品是装备还是武器
+    DataManager.Reinforce.isWeaponCheck = function(combatItem){
+        return $dataItems[combatItem.id].name === combatItem.name;
+    }
+
     //检查该武器/装备是否还能强化
-    DataManager.Reinforce.combatItemCheck = function(combatInfo){
-        if(combatInfo === null) return false;
+    DataManager.Reinforce.combatItemCheck = function (combatInfo) {
+        if (combatInfo === null) return false;
         return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0
-        || combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
+            || combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
     }
 
     //检查物品是否属于强化物
-    DataManager.Reinforce.MaterialCheck = function(item){
-        if(item === null) return false;
+    DataManager.Reinforce.MaterialCheck = function (item) {
+        if (item === null) return false;
         let info = this.getMaterialInfo(item);
-        return info.MaterialType === PluginPara['weaponComponentTypeName'] 
+        return info.MaterialType === PluginPara['weaponComponentTypeName']
             || info.MaterialType === PluginPara['weaponMaterialTypeName']
             || info.MaterialType === PluginPara['armourElementTypeName'];
     }
 
     //检查该武器/装备与材料是否匹配
-    DataManager.Reinforce.isMatch = function(combatInfo, matType){
-        if(combatInfo.isWeapon){
+    DataManager.Reinforce.isMatch = function (combatInfo, matType) {
+        if (combatInfo.isWeapon) {
             return matType === PluginPara['weaponComponentTypeName'] || matType === PluginPara['weaponMaterialTypeName']
-        }else{
+        } else {
             return matType === PluginPara['armourElementTypeName'];
         }
     }
-    
+
     //检查是否满足强化条件
-    DataManager.Reinforce.reinforceCheck = function(combatInfo, matType){
+    DataManager.Reinforce.reinforceCheck = function (combatInfo, matType) {
         return this.combatItemCheck(combatInfo) && this.isMatch(combatInfo, matType);
     }
 
     //更新背包，包含剔除旧物品、增加新物品、删除强化材料
-    DataManager.Reinforce.updateBackpack = function(oldItem, newItem, material){
+    DataManager.Reinforce.updateBackpack = function (oldItem, newItem, material) {
         $gameParty.loseItem(oldItem, 1, true);
         $gameParty.gainItem(newItem, 1, false);
         $gameParty.loseItem(material, 1);
     }
 
     //返回背包内可强化装备和武器列表
-    DataManager.Reinforce.CombatItemList = function(){
+    DataManager.Reinforce.CombatItemList = function () {
         let CombatItemList = {}
         CombatItemList.weaponList = new Array();
         CombatItemList.armorList = new Array();
-        for(const key in $gameParty._weapons){
+        for (const key in $gameParty._weapons) {
             let info = this.getCombatItemInfo($dataWeapons[key], true);
-            if(this.combatItemCheck(info)){
+            if (this.combatItemCheck(info)) {
                 CombatItemList.weaponList.push($dataWeapons[key]);
             }
         }
-        for(const key in $gameParty._armors){
+        for (const key in $gameParty._armors) {
             let info = this.getCombatItemInfo($dataArmors[key], false);
-            if(this.combatItemCheck(info)){
+            if (this.combatItemCheck(info)) {
                 CombatItemList.armorList.push($dataArmors[key]);
             }
         }
@@ -340,10 +344,10 @@
     }
 
     //返回背包内强化材料列表
-    DataManager.Reinforce.MaterialList = function(){
+    DataManager.Reinforce.MaterialList = function () {
         let MaterialList = new Array();
-        for(const key in $gameParty._items){
-            if(this.MaterialCheck($dataItems[key])){
+        for (const key in $gameParty._items) {
+            if (this.MaterialCheck($dataItems[key])) {
                 MaterialList.push($dataItems[key]);
             }
         }
@@ -351,19 +355,174 @@
     }
 
     //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功
-    DataManager.Reinforce.reinforce = function(combatItem, material, isWeapon){
+    DataManager.Reinforce.reinforce = function(combatItem, material){
+        let isWeapon = this.isWeaponCheck(combatItem);
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
         let materialInfo = this.getMaterialInfo(material);
         let matType = materialInfo.MaterialType;
 
-        if(this.reinforceCheck(combatInfo, matType)){
+        let res = {
+            flag: true,
+            newCombatItem: {}
+        }
+        if (this.reinforceCheck(combatInfo, matType)) {
             this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
             this.updateBackpack(combatItem, newCombatItem, isWeapon, material);
-            return true;
-        }else{
+            res.flag = true;
+            res.newCombatItem = newCombatItem;
+        } else {
             console.log("物品或材料未满足强化条件");
-            return false;
+            res.flag = false;
+        }
+        return res;
+    }
+
+    //=============================================================================
+    //合成界面编写
+    function Scene_Reinforce() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Scene_Reinforce.prototype = Object.create(Scene_MenuBase.prototype);
+    Scene_Reinforce.prototype.constructor = Scene_Reinforce;
+
+    Scene_Reinforce.prototype.initialize = function() {
+        Scene_MenuBase.prototype.initialize.call(this);
+    };
+
+    Scene_Reinforce.prototype.create = function() {
+        Scene_MenuBase.prototype.create.call(this);
+        this.createHelpWindow();
+        this.createReinforceSelectWindows();
+    };
+
+    Scene_Reinforce.prototype.createReinforceSelectWindows = function() {
+        var wx = 0;
+        var wy = this._helpWindow.height;
+        var ww = Graphics.boxWidth / 2;
+        var wh = Graphics.boxHeight - wy;
+        this._reinforceSelectWindowLeft = new Window_ReinforceSelect(wx, wy, ww, wh, 'left');
+        this._reinforceSelectWindowLeft.setHandler("ok", this.onReinforceSelectOk.bind(this));
+        this._reinforceSelectWindowLeft.setHandler("cancel", this.onReinforceSelectCancel.bind(this));
+        this._reinforceSelectWindowLeft.refresh();
+        this.addWindow(this._reinforceSelectWindowLeft);
+
+        wx = Graphics.boxWidth / 2;
+        ww = Graphics.boxWidth - wx;
+        this._reinforceSelectWindowRight = new Window_ReinforceSelect(wx, wy, ww, wh, 'right');
+        this._reinforceSelectWindowRight.setHandler("ok", this.onMaterialSelectOk.bind(this));
+        this._reinforceSelectWindowRight.setHandler("cancel", this.onMaterialSelectCancel.bind(this));
+        this._reinforceSelectWindowRight.refresh();
+        this._reinforceSelectWindowRight.deactivate();
+        this.addWindow(this._reinforceSelectWindowRight);
+    };
+    Scene_Reinforce.prototype.onReinforceSelectCancel = function () {
+        this.popScene();
+    }
+    Scene_Reinforce.prototype.onReinforceSelectOk = function () {
+        var item = this._reinforceSelectWindowLeft.item();
+        if (item) {
+            // this._reinforceSelectWindowRight.open();
+            this._reinforceSelectWindowRight.activate();
+            this._reinforceSelectWindowRight.select(0);
+            this._combatItem = item;
+        }
+    };
+
+    Scene_Reinforce.prototype.onMaterialSelectCancel = function () {
+        this._reinforceSelectWindowRight.deactivate();
+        this._reinforceSelectWindowRight.select(-1);
+        this._reinforceSelectWindowRight.refresh();
+        this._reinforceSelectWindowLeft.activate();
+    }
+    Scene_Reinforce.prototype.onMaterialSelectOk = function () {
+        var material = this._reinforceSelectWindowRight.item();
+        if (material) {
+            var res = DataManager.Reinforce.reinforce(this._combatItem, material, true);
+            if (res.flag){
+                //TODO 如果成功应该显示newCombatItem
+                this._reinforceResult = res.newCombatItem;
+                this.onMaterialSelectCancel();
+            }
+            //TODO  如果失败应该显示提示
+            else {
+
+            }
+        }
+    };
+
+
+    function Window_ReinforceSelect() {
+        this.initialize.apply(this, arguments);
+    }
+
+    Window_ReinforceSelect.prototype = Object.create(Window_Selectable.prototype);
+    Window_ReinforceSelect.prototype.constructor = Window_ReinforceSelect;
+
+    Window_ReinforceSelect.prototype.initialize = function(x, y, width, height, location) {
+        Window_Selectable.prototype.initialize.call(this, new Rectangle(x, y, width, height));
+        this.location = location
+    };
+
+    Window_ReinforceSelect.prototype.maxItems = function() {
+        return this._data ? this._data.length : 0;
+    };
+
+    Window_ReinforceSelect.prototype.item = function() {
+        return this._data && this.index() >= 0 ? this._data[this.index()] : null;
+    };
+
+    Window_ReinforceSelect.prototype.includes = function(item) {
+        return true;
+    };
+
+    Window_ReinforceSelect.prototype.isEnabled = function(item) {
+        return true;
+    };
+
+    Window_ReinforceSelect.prototype.makeItemList = function() {
+        if (this.location == 'left') {
+            this._data = DataManager.Reinforce.CombatItemList();
+        }
+        else {
+            this._data = DataManager.Reinforce.MaterialList();
+        }
+    };
+
+    Window_ReinforceSelect.prototype.refresh = function () {
+        if (this.contents) {
+            this.contents.clear();
+            this.makeItemList();
+            console.log(this._data, this.maxItems(), this._data.length)
+            for (let i = 0;i < this.maxItems();i++) {
+                const rect = this.itemLineRect(i);
+                var item = this._data[i];
+                this.drawItem(i);
+                // this.drawIcon(item.)
+            }
         }
     }
+    Window_ReinforceSelect.prototype.drawItem = function(index) {
+        var item = this._data[index];
+        var rect = this.itemLineRect(index);
+        this.drawText(item.name, rect.x, rect.y, rect.width);
+    };
+
+    const _Window_MenuCommand_addOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
+    Window_MenuCommand.prototype.addOriginalCommands = function() {
+        _Window_MenuCommand_addOriginalCommands.call(this);
+        this.addCommand('强化', "reinforce", true);
+    };
+
+    const _Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
+    Scene_Menu.prototype.createCommandWindow = function() {
+        _Scene_Menu_createCommandWindow.call(this);
+        this._commandWindow.setHandler('reinforce', this.commandReinforce.bind(this));
+        this._commandWindow.addCommand('强化', 'reinforce', true);
+    };
+
+    Scene_Menu.prototype.commandReinforce = function() {
+        SceneManager.push(Scene_Reinforce);
+    };
 })()
