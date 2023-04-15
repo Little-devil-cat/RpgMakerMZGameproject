@@ -118,7 +118,7 @@
         "pitch": 100,
         "volume": 90
     },
-    "editMapId": 4,
+    "editMapId": 2,
     "elements": [
         "",
         "普通弹药",
@@ -170,7 +170,7 @@
     "optSlipDeath": false,
     "optTransparent": false,
     "partyMembers": [
-        1
+        4
     ],
     "ship": {
         "bgm": {
@@ -337,9 +337,9 @@
             "volume": 90
         }
     ],
-    "startMapId": 3,
+    "startMapId": 2,
     "startX": 7,
-    "startY": 6,
+    "startY": 9,
     "switches": [
         "",
         "在当前地图中",
@@ -1115,7 +1115,7 @@
         "",
         ""
     ],
-    "versionId": 78970717,
+    "versionId": 98088146,
     "victoryMe": {
         "name": "Victory1",
         "pan": 0,
@@ -1125,15 +1125,11 @@
     "weaponTypes": [
         "",
         "手枪",
-        "电磁步枪",
+        "近身防卫武器",
         "突击步枪",
         "狙击步枪",
         "霰弹枪",
-        "近身防卫武器",
-        "弓箭",
-        "弩",
-        "战地治疗装备",
-        "机枪"
+        "战地治疗装备"
     ],
     "windowTone": [
         0,
