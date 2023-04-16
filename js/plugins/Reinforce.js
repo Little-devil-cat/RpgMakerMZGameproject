@@ -354,7 +354,8 @@
                 CombatItemList.armorList.push($dataArmors[key]);
             }
         }
-        return CombatItemList;
+        // 不需要分开的话直接合并返回一个数组
+        return CombatItemList.weaponList.concat(CombatItemList.armorList);
     }
 
     //返回背包内强化材料列表
@@ -419,6 +420,7 @@
         this._reinforceSelectWindowLeft = new Window_ReinforceSelect(wx, wy, ww, wh, 'left');
         this._reinforceSelectWindowLeft.setHandler("ok", this.onReinforceSelectOk.bind(this));
         this._reinforceSelectWindowLeft.setHandler("cancel", this.onReinforceSelectCancel.bind(this));
+        this._reinforceSelectWindowLeft.activate();
         this._reinforceSelectWindowLeft.refresh();
         this.addWindow(this._reinforceSelectWindowLeft);
 
@@ -461,8 +463,9 @@
             }
             //TODO  如果失败应该显示提示
             else {
-
+                this.onMaterialSelectCancel();
             }
+            console.log(res)
         }
     };
 
@@ -508,19 +511,20 @@
         if (this.contents) {
             this.contents.clear();
             this.makeItemList();
-            console.log(this._data, this.maxItems(), this._data.length)
+            console.log(this.location ,this._data)
             for (let i = 0;i < this.maxItems();i++) {
                 const rect = this.itemLineRect(i);
                 var item = this._data[i];
                 this.drawItem(i);
-                // this.drawIcon(item.)
+                this.changePaintOpacity(true);
             }
         }
     }
     Window_ReinforceSelect.prototype.drawItem = function(index) {
         var item = this._data[index];
         var rect = this.itemLineRect(index);
-        this.drawText(item.name, rect.x, rect.y, rect.width);
+        this.drawIcon(item.iconIndex, rect.x, rect.y);
+        this.drawText(item.name, rect.x + ImageManager.iconWidth + 10, rect.y, rect.width);
     };
 
     const _Window_MenuCommand_addOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
@@ -539,4 +543,5 @@
     Scene_Menu.prototype.commandReinforce = function() {
         SceneManager.push(Scene_Reinforce);
     };
+
 })()
