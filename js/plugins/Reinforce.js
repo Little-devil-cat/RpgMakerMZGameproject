@@ -59,7 +59,18 @@
  * @type string
  * @desc 用于定义装备强化素材变量名称
  * @default armourElement
- *
+ * 
+ * @param MaterialUpdateLableName
+ * @text 素材强化标签名
+ * @type string
+ * @desc 用于定义强化界面中素材强化的显示
+ * @default 强化
+ * 
+ * @param ComponentUpdateLableName
+ * @text 配件强化标签名
+ * @type string
+ * @desc 用于定义强化界面中配件强化的显示
+ * @default 改造
  */
 (() => {
     const PluginPara = PluginManager.parameters('Reinforce');
@@ -367,6 +378,38 @@
             }
         }
         return MaterialList;
+    }
+    
+    //返回在强化界面中选择物品时显示的信息
+    DataManager.Reinforce.getItemUserInterfaceInfo = function(item){
+        let lable = new Array();
+        if(!this.MaterialCheck(item)){
+            lable.push(item.description);
+            let isWeapon = this.isWeaponCheck(item);
+            let combatItemInfo = this.getCombatItemInfo(item, isWeapon);
+
+            if(item.params[2] !== 0) lable.push("近身搏斗 : " + item.params[2]);
+            if(item.params[4] !== 0) lable.push("远程攻击 : " + item.params[4]);
+            if(item.params[3] !== 0) lable.push("招架能力 : " + item.params[3]);
+            if(item.params[5] !== 0) lable.push("防弹等级 : " + item.params[5]);
+
+            lable.push(PluginPara['MaterialUpdateLableName'] + "次数 : " + combatItemInfo.MaterialUpdate.NowTimes + " / "+ combatItemInfo.MaterialUpdate.MaxTimes);
+            if(isWeapon) lable.push(PluginPara['ComponentUpdateLableName'] + "次数 : " + combatItemInfo.ComponentUpdate.NowTimes + " / "+ combatItemInfo.ComponentUpdate.MaxTimes);
+       
+        }else{
+            let matInfo = this.getMaterialInfo(item);
+
+            if(matInfo.MaterialType === PluginPara['weaponComponentTypeName']){
+                lable.push("武器" + PluginPara['ComponentUpdateLableName'] + "配件");
+            }else if(matInfo.MaterialType === PluginPara['weaponMaterialTypeName']){
+                lable.push("武器" + PluginPara['MaterialUpdateLableName'] + "材料");
+            }else if(matInfo.MaterialType === PluginPara['armourElementTypeName']){
+                lable.push("装备" + PluginPara['MaterialUpdateLableName'] + "材料");
+            }
+            
+            lable.push(item.description);
+        }
+        return lable;
     }
 
     //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功

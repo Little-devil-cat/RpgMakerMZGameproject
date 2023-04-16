@@ -12,7 +12,7 @@ var $plugins =
 {"name":"XdRs_TaskEditor","status":false,"description":"任务数据编辑器。","parameters":{}},
 {"name":"MessageFont","status":true,"description":"修改剧情对话字体","parameters":{"fontSize":"24"}},
 {"name":"HpGauge","status":true,"description":"血条显示插件","parameters":{}},
-{"name":"Reinforce","status":true,"description":"物品自定义功能","parameters":{"weaponComponentTypeName":"weaponComponent","emptySkill":"6","weaponMaterialTypeName":"weaponMaterial","armourElementTypeName":"armourElement"}},
+{"name":"Reinforce","status":true,"description":"物品自定义功能","parameters":{"weaponComponentTypeName":"weaponComponent","emptySkill":"6","weaponMaterialTypeName":"weaponMaterial","armourElementTypeName":"armourElement","MaterialUpdateLableName":"强化","ComponentUpdateLableName":"改造"}},
 {"name":"BattleMsgController","status":true,"description":"修改战斗信息","parameters":{"frameCount":"20"}},
 {"name":"BattleMembersSetting","status":true,"description":"战斗人员限制","parameters":{"maxBattleMembers":"3"}}
 ];
