@@ -382,7 +382,7 @@
         }
         if (this.reinforceCheck(combatInfo, matType)) {
             this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
-            this.updateBackpack(combatItem, newCombatItem, isWeapon, material);
+            this.updateBackpack(combatItem, newCombatItem, material);
             res.flag = true;
             res.newCombatItem = newCombatItem;
         } else {
