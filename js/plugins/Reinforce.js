@@ -229,8 +229,10 @@
     DataManager.Reinforce.DulpulicateCombatItems = function (items, itemInfo) {
         let newItem = JSON.parse(JSON.stringify(items));
         if (itemInfo.isWeapon) {
+            newItem.id = $dataWeapons.length;
             $dataWeapons.push(newItem);
         } else {
+            newItem.id = $dataArmors.length;
             $dataArmors.push(newItem);
         }
         return newItem;
@@ -283,7 +285,7 @@
 
     //检查该战斗物品是装备还是武器
     DataManager.Reinforce.isWeaponCheck = function(combatItem){
-        return $dataItems[combatItem.id].name === combatItem.name;
+        return $dataWeapons[combatItem.id].name === combatItem.name;
     }
 
     //检查该武器/装备是否还能强化
