@@ -1,7 +1,7 @@
 [
 null,
 {"id":1,"expanded":true,"name":"小镇（日）","order":1,"parentId":0,"scrollX":492,"scrollY":544},
-{"id":2,"expanded":false,"name":"测试地图","order":2,"parentId":1,"scrollX":459,"scrollY":438.5},
+{"id":2,"expanded":false,"name":"测试地图","order":2,"parentId":1,"scrollX":451,"scrollY":502},
 {"id":3,"expanded":false,"name":"公寓","order":4,"parentId":1,"scrollX":605,"scrollY":505},
 {"id":4,"expanded":false,"name":"医院某处","order":3,"parentId":1,"scrollX":772,"scrollY":1023.5},
 {"id":5,"expanded":true,"name":"破败的旧工业区","order":5,"parentId":1,"scrollX":749,"scrollY":505},
