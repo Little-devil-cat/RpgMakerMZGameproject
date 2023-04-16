@@ -1,6 +1,6 @@
 /*:
  * @plugindesc 物品自定义功能
- * @author EskiNott
+ * @author EskiNott & Hale Lin
  *
  * @help
  * =>插件使用初始化
@@ -290,9 +290,17 @@
 
     //检查该武器/装备是否还能强化
     DataManager.Reinforce.combatItemCheck = function (combatInfo) {
+        return this.ComponentUpdateCheck(combatInfo) || this.MaterialUpdateCheck(combatInfo);
+    }
+
+    DataManager.Reinforce.ComponentUpdateCheck = function(combatInfo){
         if (combatInfo === null) return false;
-        return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0
-            || combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
+        return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0;
+    }
+
+    DataManager.Reinforce.MaterialUpdateCheck = function(combatInfo){
+        if (combatInfo === null) return false;
+        return combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
     }
 
     //检查物品是否属于强化物
@@ -315,7 +323,11 @@
 
     //检查是否满足强化条件
     DataManager.Reinforce.reinforceCheck = function (combatInfo, matType) {
-        return this.combatItemCheck(combatInfo) && this.isMatch(combatInfo, matType);
+        if(matType === PluginPara['weaponComponentTypeName']){
+            return this.ComponentUpdateCheck(combatInfo) && this.isMatch(combatInfo, matType);
+        }else if(matType === PluginPara['weaponMaterialTypeName'] || matType === PluginPara['armourElementTypeName']){
+            return this.MaterialUpdateCheck(combatInfo) && this.isMatch(combatInfo, matType);
+        }
     }
 
     //更新背包，包含剔除旧物品、增加新物品、删除强化材料
@@ -371,7 +383,7 @@
         }
         if (this.reinforceCheck(combatInfo, matType)) {
             this.CombatItemIncrease(newCombatItem, materialInfo, combatInfo);
-            this.updateBackpack(combatItem, newCombatItem, isWeapon, material);
+            this.updateBackpack(combatItem, newCombatItem, material);
             res.flag = true;
             res.newCombatItem = newCombatItem;
         } else {
