@@ -185,7 +185,7 @@
                     } else if (line.match(/(dataId\s*=\s*)([0-9]*)/i)) {
                         itemInfo.Traits.dataId = Number(line.match(/(dataId\s*=\s*)([0-9]*)/i)[2]);
                     } else if (line.match(/(value\s*=\s*)([0-9]*)/i)) {
-                        itemInfo.Traits.value = Number(line.match(/(value\s*=\s*)([0-9]*)/i)[2]);
+                        itemInfo.Traits.value = Number(line.match(/(value\s*=\s*)([0-9]*\.?[0-9]*)/i)[2]);
                     }
                 } else if (weaponComponentReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['weaponComponentTypeName'];
@@ -193,6 +193,8 @@
                     itemInfo.MaterialType = PluginPara['weaponMaterialTypeName'];
                 } else if (armourElementReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['armourElementTypeName'];
+                } else if (line.match(/(multiplier\s*=\s*)([0-9]*\.?[0-9]*)/i)){
+                    itemInfo.MaterialMultiplier = Number(line.match(/(multiplier\s*=\s*)([0-9]*\.?[0-9]*)/i)[2]);
                 }
             }
         }
@@ -254,6 +256,7 @@
         let isModified = false;
         for (let element of newCombatItem.traits) {
             if (element.code === 43 && element.dataId === Number(PluginPara['emptySkill'])) {
+                console.log(element);
                 element.code = traitsInfo.code;
                 element.dataId = traitsInfo.dataId;
                 element.value = traitsInfo.value;
@@ -383,6 +386,7 @@
     //返回在强化界面中选择物品时显示的信息
     DataManager.Reinforce.getItemUserInterfaceInfo = function(item){
         let lable = new Array();
+        if(item === null) return lable;
         if(!this.MaterialCheck(item)){
             lable.push(item.description);
             let isWeapon = this.isWeaponCheck(item);
@@ -406,7 +410,7 @@
             }else if(matInfo.MaterialType === PluginPara['armourElementTypeName']){
                 lable.push("装备" + PluginPara['MaterialUpdateLableName'] + "材料");
             }
-            
+
             lable.push(item.description);
         }
         return lable;
