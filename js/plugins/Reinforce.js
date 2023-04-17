@@ -666,4 +666,10 @@
         SceneManager.push(Scene_Reinforce);
     };
 
+
+    const pluginName = document.currentScript.src.match(/.+\/(.+)\.js/)[1];
+    // 注册一下插件命令
+    PluginManager.registerCommand(pluginName, "StartSceneReinforce", () => {
+        SceneManager.push(Scene_Reinforce);
+    });
 })()
