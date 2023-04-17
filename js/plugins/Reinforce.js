@@ -450,6 +450,7 @@
         this._reinforceSelectWindowRight.deactivate();
         this._reinforceSelectWindowRight.select(-1);
         this._reinforceSelectWindowRight.refresh();
+        this._reinforceSelectWindowLeft.select(-1);
         this._reinforceSelectWindowLeft.activate();
     }
     Scene_Reinforce.prototype.onMaterialSelectOk = function () {
