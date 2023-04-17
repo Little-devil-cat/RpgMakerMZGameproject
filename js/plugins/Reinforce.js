@@ -221,16 +221,16 @@
                 isCom = false;
             } else if (isMat) {
                 if (line.match(/(maxTimes\s?=\s?)([0-9]*)/i)) {
-                    itemInfo.MaterialUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.MaterialUpdate.MaxTimes = Number(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2]);
                 } else if (line.match(/(nowTimes\s?=\s?)([0-9]*)/i)) {
-                    itemInfo.MaterialUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.MaterialUpdate.NowTimes = Number(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2]);
                     itemInfo.MaterialUpdate.NowTimeDescIndex = noteIndex;
                 }
             } else if (isCom) {
                 if (line.match(/(maxTimes\s?=\s?)([0-9]*)/i)) {
-                    itemInfo.ComponentUpdate.MaxTimes = line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.ComponentUpdate.MaxTimes = Number(line.match(/(maxTimes\s?=\s?)([0-9]*)/i)[2]);
                 } else if (line.match(/(nowTimes\s?=\s?)([0-9]*)/i)) {
-                    itemInfo.ComponentUpdate.NowTimes = line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2];
+                    itemInfo.ComponentUpdate.NowTimes = Number(line.match(/(nowTimes\s?=\s?)([0-9]*)/i)[2]);
                     itemInfo.ComponentUpdate.NowTimeDescIndex = noteIndex;
                 }
             }
@@ -346,6 +346,7 @@
 
     //更新背包，包含剔除旧物品、增加新物品、删除强化材料
     DataManager.Reinforce.updateBackpack = function (oldItem, newItem, material) {
+        console.log(oldItem, newItem);
         $gameParty.loseItem(oldItem, 1, true);
         $gameParty.gainItem(newItem, 1, false);
         $gameParty.loseItem(material, 1);
