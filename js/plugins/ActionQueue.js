@@ -149,14 +149,15 @@ BattleManager.makeActionOrders = function () {
         battlers.push(...$gameTroop.members());
     }
     for (const battler of battlers) {
-        // battler.makeSpeed();
-        if (battler._enemyId) {
-            battler._speed = battler.agi * 100
-        }
-        // 敏捷 * 0.8 ~ 1.2 + 等级 * 0.1
-        else {
-            battler._speed = battler.agi * Math.floor((Math.random() * 0.4 + 0.8) * 100) + battler._level * 0.1
-        }
+        // // battler.makeSpeed();
+        // if (battler._enemyId) {
+        //     battler._speed = battler.agi * 100
+        // }
+        // // 敏捷 * 0.8 ~ 1.2 + 等级 * 0.1
+        // else {
+        //     battler._speed = battler.agi * Math.floor((Math.random() * 0.4 + 0.8) * 100) + battler._level * 0.1
+        // }
+        battler._speed = battler.agi * Math.floor((Math.random() * 0.6 + 0.7) * 100);
     }
     battlers.sort((a, b) => b.speed() - a.speed());
     console.log(battlers)
