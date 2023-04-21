@@ -91,6 +91,7 @@
     }
 
     class Material {
+        Name = "";
         MaterialType = "";
         MaterialMultiplier = 1;
         Traits = {
@@ -167,6 +168,8 @@
         let weaponComponentReg = new RegExp('type = ' + PluginPara['weaponComponentTypeName']);
         let weaponMaterialReg = new RegExp('type = ' + PluginPara['weaponMaterialTypeName']);
         let armourElementReg = new RegExp('type = ' + PluginPara['armourElementTypeName']);
+
+        itemInfo.Name = item.name;
 
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
             let line = notes[noteIndex];
@@ -274,6 +277,13 @@
         item.note = newNote;
     }
 
+    DataManager.Reinforce.desWriteBack = function(item, combatInfo, materialInfo){
+        let additionString = "";
+        if(combatInfo.ComponentUpdate.NowTimes === 1) additionString = additionString.concat("\n");
+        additionString = additionString.concat(" +" + materialInfo.Name);
+        item.description = item.description.concat(additionString)
+    }
+
     //根据材料信息升级新复制的武器/护甲
     DataManager.Reinforce.CombatItemIncrease = function (newCombatItem, materialInfo, combatInfo) {
         switch (materialInfo.MaterialType) {
@@ -281,6 +291,7 @@
                 this.modifyTraits(newCombatItem, materialInfo.Traits);
                 combatInfo.ComponentUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.ComponentUpdate.NowTimeDescIndex, combatInfo.ComponentUpdate.NowTimes);
+                this.desWriteBack(newCombatItem, combatInfo, materialInfo);
                 break;
             case PluginPara['weaponMaterialTypeName']:
                 newCombatItem.params[2] = Math.round(newCombatItem.params[2] * materialInfo.MaterialMultiplier);
@@ -389,7 +400,12 @@
         let lable = new Array();
         if (item === null) return lable;
         if (!this.MaterialCheck(item)) {
-            lable.push(item.description);
+
+            let combatDes = item.description.split(/[\r\n]+/);
+            for(let line of combatDes){
+                lable.push(line);
+            }
+
             let isWeapon = this.isWeaponCheck(item);
             let combatItemInfo = this.getCombatItemInfo(item, isWeapon);
 
