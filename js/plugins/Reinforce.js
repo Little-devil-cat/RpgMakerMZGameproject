@@ -193,7 +193,7 @@
                     itemInfo.MaterialType = PluginPara['weaponMaterialTypeName'];
                 } else if (armourElementReg.test(line)) {
                     itemInfo.MaterialType = PluginPara['armourElementTypeName'];
-                } else if (line.match(/(multiplier\s*=\s*)([0-9]*\.?[0-9]*)/i)){
+                } else if (line.match(/(multiplier\s*=\s*)([0-9]*\.?[0-9]*)/i)) {
                     itemInfo.MaterialMultiplier = Number(line.match(/(multiplier\s*=\s*)([0-9]*\.?[0-9]*)/i)[2]);
                 }
             }
@@ -298,7 +298,7 @@
     }
 
     //检查该战斗物品是装备还是武器
-    DataManager.Reinforce.isWeaponCheck = function(combatItem){
+    DataManager.Reinforce.isWeaponCheck = function (combatItem) {
         return $dataWeapons[combatItem.id].name === combatItem.name;
     }
 
@@ -307,12 +307,12 @@
         return this.ComponentUpdateCheck(combatInfo) || this.MaterialUpdateCheck(combatInfo);
     }
 
-    DataManager.Reinforce.ComponentUpdateCheck = function(combatInfo){
+    DataManager.Reinforce.ComponentUpdateCheck = function (combatInfo) {
         if (combatInfo === null) return false;
         return combatInfo.ComponentUpdate.NowTimes < combatInfo.ComponentUpdate.MaxTimes && combatInfo.ComponentUpdate.MaxTimes !== 0;
     }
 
-    DataManager.Reinforce.MaterialUpdateCheck = function(combatInfo){
+    DataManager.Reinforce.MaterialUpdateCheck = function (combatInfo) {
         if (combatInfo === null) return false;
         return combatInfo.MaterialUpdate.NowTimes < combatInfo.MaterialUpdate.MaxTimes && combatInfo.MaterialUpdate.MaxTimes !== 0;
     }
@@ -337,9 +337,9 @@
 
     //检查是否满足强化条件
     DataManager.Reinforce.reinforceCheck = function (combatInfo, matType) {
-        if(matType === PluginPara['weaponComponentTypeName']){
+        if (matType === PluginPara['weaponComponentTypeName']) {
             return this.ComponentUpdateCheck(combatInfo) && this.isMatch(combatInfo, matType);
-        }else if(matType === PluginPara['weaponMaterialTypeName'] || matType === PluginPara['armourElementTypeName']){
+        } else if (matType === PluginPara['weaponMaterialTypeName'] || matType === PluginPara['armourElementTypeName']) {
             return this.MaterialUpdateCheck(combatInfo) && this.isMatch(combatInfo, matType);
         }
     }
@@ -383,32 +383,32 @@
         }
         return MaterialList;
     }
-    
+
     //返回在强化界面中选择物品时显示的信息
-    DataManager.Reinforce.getItemUserInterfaceInfo = function(item){
+    DataManager.Reinforce.getItemUserInterfaceInfo = function (item) {
         let lable = new Array();
-        if(item === null) return lable;
-        if(!this.MaterialCheck(item)){
+        if (item === null) return lable;
+        if (!this.MaterialCheck(item)) {
             lable.push(item.description);
             let isWeapon = this.isWeaponCheck(item);
             let combatItemInfo = this.getCombatItemInfo(item, isWeapon);
 
-            if(item.params[2] !== 0) lable.push("近身搏斗 : " + item.params[2]);
-            if(item.params[4] !== 0) lable.push("远程攻击 : " + item.params[4]);
-            if(item.params[3] !== 0) lable.push("招架能力 : " + item.params[3]);
-            if(item.params[5] !== 0) lable.push("防弹等级 : " + item.params[5]);
+            if (item.params[2] !== 0) lable.push("近身搏斗 : " + item.params[2]);
+            if (item.params[4] !== 0) lable.push("远程攻击 : " + item.params[4]);
+            if (item.params[3] !== 0) lable.push("招架能力 : " + item.params[3]);
+            if (item.params[5] !== 0) lable.push("防弹等级 : " + item.params[5]);
 
-            lable.push(PluginPara['MaterialUpdateLableName'] + "次数 : " + combatItemInfo.MaterialUpdate.NowTimes + " / "+ combatItemInfo.MaterialUpdate.MaxTimes);
-            if(isWeapon) lable.push(PluginPara['ComponentUpdateLableName'] + "次数 : " + combatItemInfo.ComponentUpdate.NowTimes + " / "+ combatItemInfo.ComponentUpdate.MaxTimes);
-       
-        }else{
+            lable.push(PluginPara['MaterialUpdateLableName'] + "次数 : " + combatItemInfo.MaterialUpdate.NowTimes + " / " + combatItemInfo.MaterialUpdate.MaxTimes);
+            if (isWeapon) lable.push(PluginPara['ComponentUpdateLableName'] + "次数 : " + combatItemInfo.ComponentUpdate.NowTimes + " / " + combatItemInfo.ComponentUpdate.MaxTimes);
+
+        } else {
             let matInfo = this.getMaterialInfo(item);
 
-            if(matInfo.MaterialType === PluginPara['weaponComponentTypeName']){
+            if (matInfo.MaterialType === PluginPara['weaponComponentTypeName']) {
                 lable.push("武器" + PluginPara['ComponentUpdateLableName'] + "配件");
-            }else if(matInfo.MaterialType === PluginPara['weaponMaterialTypeName']){
+            } else if (matInfo.MaterialType === PluginPara['weaponMaterialTypeName']) {
                 lable.push("武器" + PluginPara['MaterialUpdateLableName'] + "材料");
-            }else if(matInfo.MaterialType === PluginPara['armourElementTypeName']){
+            } else if (matInfo.MaterialType === PluginPara['armourElementTypeName']) {
                 lable.push("装备" + PluginPara['MaterialUpdateLableName'] + "材料");
             }
 
@@ -418,7 +418,7 @@
     }
 
     //升级武器/护甲 该函数为强化主要调用函数 并返回强化是否成功
-    DataManager.Reinforce.reinforce = function(combatItem, material){
+    DataManager.Reinforce.reinforce = function (combatItem, material) {
         let isWeapon = this.isWeaponCheck(combatItem);
         let combatInfo = this.getCombatItemInfo(combatItem, isWeapon);
         let newCombatItem = this.DulpulicateCombatItems(combatItem, combatInfo);
@@ -435,7 +435,7 @@
             res.flag = true;
             res.newCombatItem = newCombatItem;
         } else {
-            console.log("物品或材料未满足强化条件");
+            res.msg = "物品或材料未满足强化/改造条件";
             res.flag = false;
         }
         return res;
@@ -450,23 +450,29 @@
     Scene_Reinforce.prototype = Object.create(Scene_MenuBase.prototype);
     Scene_Reinforce.prototype.constructor = Scene_Reinforce;
 
-    Scene_Reinforce.prototype.initialize = function() {
+    Scene_Reinforce.prototype.initialize = function () {
         Scene_MenuBase.prototype.initialize.call(this);
     };
 
-    Scene_Reinforce.prototype.create = function() {
+    Scene_Reinforce.prototype.create = function () {
         Scene_MenuBase.prototype.create.call(this);
         this.createHelpWindow();
         this.createReinforceSelectWindows();
     };
 
-    Scene_Reinforce.prototype.createReinforceSelectWindows = function() {
+    Scene_Reinforce.prototype.createReinforceSelectWindows = function () {
         var wx = 0;
         var wy = this._helpWindow.height;
         var ww = Graphics.boxWidth / 2;
-        var wh = Graphics.boxHeight - wy;
+        var wh = (Graphics.boxHeight - wy) * 0.7;
+
+        this._descWindow = new Window_Desc(new Rectangle(0, wh + wy, Graphics.boxWidth, Graphics.boxHeight - wh - wy))
+        this._descWindow.activate();
+        this.addWindow(this._descWindow);
+
         this._reinforceSelectWindowLeft = new Window_ReinforceSelect(wx, wy, ww, wh, 'left');
         this._reinforceSelectWindowLeft.setHandler("ok", this.onReinforceSelectOk.bind(this));
+        this._reinforceSelectWindowLeft.setHandler("select", this.onReinforceSelect.bind(this));
         this._reinforceSelectWindowLeft.setHandler("cancel", this.onReinforceSelectCancel.bind(this));
         this._reinforceSelectWindowLeft.activate();
         this._reinforceSelectWindowLeft.refresh();
@@ -476,11 +482,18 @@
         ww = Graphics.boxWidth - wx;
         this._reinforceSelectWindowRight = new Window_ReinforceSelect(wx, wy, ww, wh, 'right');
         this._reinforceSelectWindowRight.setHandler("ok", this.onMaterialSelectOk.bind(this));
+        this._reinforceSelectWindowRight.setHandler("select", this.onMaterialSelect.bind(this));
         this._reinforceSelectWindowRight.setHandler("cancel", this.onMaterialSelectCancel.bind(this));
         this._reinforceSelectWindowRight.refresh();
         this._reinforceSelectWindowRight.deactivate();
         this.addWindow(this._reinforceSelectWindowRight);
     };
+    Scene_Reinforce.prototype.onReinforceSelect = function () {
+        if (this._reinforceSelectWindowLeft._index > -1) {
+            this._descWindow.setItem(this._reinforceSelectWindowLeft._data[this._reinforceSelectWindowLeft._index])
+            this._descWindow.refresh();
+        }
+    }
     Scene_Reinforce.prototype.onReinforceSelectCancel = function () {
         this.popScene();
     }
@@ -489,29 +502,40 @@
         if (item) {
             // this._reinforceSelectWindowRight.open();
             this._reinforceSelectWindowRight.activate();
-            this._reinforceSelectWindowRight.select(0);
+            this._reinforceSelectWindowRight.select(-1);
             this._combatItem = item;
         }
     };
 
+    Scene_Reinforce.prototype.onMaterialSelect = function () {
+        if (this._reinforceSelectWindowRight._index > -1) {
+            this._descWindow.setItem(this._reinforceSelectWindowRight._data[this._reinforceSelectWindowRight._index])
+            this._descWindow.refresh();
+        }
+    }
     Scene_Reinforce.prototype.onMaterialSelectCancel = function () {
         this._reinforceSelectWindowRight.deactivate();
         this._reinforceSelectWindowRight.select(-1);
         this._reinforceSelectWindowRight.refresh();
+        this._reinforceSelectWindowLeft.select(-1);
+        this._reinforceSelectWindowLeft.refresh();
         this._reinforceSelectWindowLeft.activate();
     }
     Scene_Reinforce.prototype.onMaterialSelectOk = function () {
         var material = this._reinforceSelectWindowRight.item();
         if (material) {
             var res = DataManager.Reinforce.reinforce(this._combatItem, material, true);
-            if (res.flag){
+            if (res.flag) {
                 //TODO 如果成功应该显示newCombatItem
                 this._reinforceResult = res.newCombatItem;
+                this._descWindow.setItem(this._reinforceResult);
+                this._descWindow.refresh();
                 this.onMaterialSelectCancel();
             }
             //TODO  如果失败应该显示提示
             else {
                 this.onMaterialSelectCancel();
+                this._descWindow.refresh(res.msg)
             }
             console.log(res)
         }
@@ -525,32 +549,38 @@
     Window_ReinforceSelect.prototype = Object.create(Window_Selectable.prototype);
     Window_ReinforceSelect.prototype.constructor = Window_ReinforceSelect;
 
-    Window_ReinforceSelect.prototype.initialize = function(x, y, width, height, location) {
+    Window_ReinforceSelect.prototype.initialize = function (x, y, width, height, location) {
         Window_Selectable.prototype.initialize.call(this, new Rectangle(x, y, width, height));
         this.location = location
     };
 
-    Window_ReinforceSelect.prototype.maxItems = function() {
+    Window_ReinforceSelect.prototype.select = function (index) {
+        Window_Selectable.prototype.select.call(this, index);
+        if (index > -1 && this.active) {
+            this.callHandler("select");
+        }
+    }
+
+    Window_ReinforceSelect.prototype.maxItems = function () {
         return this._data ? this._data.length : 0;
     };
 
-    Window_ReinforceSelect.prototype.item = function() {
+    Window_ReinforceSelect.prototype.item = function () {
         return this._data && this.index() >= 0 ? this._data[this.index()] : null;
     };
 
-    Window_ReinforceSelect.prototype.includes = function(item) {
+    Window_ReinforceSelect.prototype.includes = function (item) {
         return true;
     };
 
-    Window_ReinforceSelect.prototype.isEnabled = function(item) {
+    Window_ReinforceSelect.prototype.isEnabled = function (item) {
         return true;
     };
 
-    Window_ReinforceSelect.prototype.makeItemList = function() {
+    Window_ReinforceSelect.prototype.makeItemList = function () {
         if (this.location == 'left') {
             this._data = DataManager.Reinforce.CombatItemList();
-        }
-        else {
+        } else {
             this._data = DataManager.Reinforce.MaterialList();
         }
     };
@@ -559,8 +589,7 @@
         if (this.contents) {
             this.contents.clear();
             this.makeItemList();
-            console.log(this.location ,this._data)
-            for (let i = 0;i < this.maxItems();i++) {
+            for (let i = 0; i < this.maxItems(); i++) {
                 const rect = this.itemLineRect(i);
                 var item = this._data[i];
                 this.drawItem(i);
@@ -568,28 +597,79 @@
             }
         }
     }
-    Window_ReinforceSelect.prototype.drawItem = function(index) {
+    Window_ReinforceSelect.prototype.drawItem = function (index) {
         var item = this._data[index];
         var rect = this.itemLineRect(index);
         this.drawIcon(item.iconIndex, rect.x, rect.y);
         this.drawText(item.name, rect.x + ImageManager.iconWidth + 10, rect.y, rect.width);
     };
 
+
+
+    function Window_Desc() {
+        this.initialize(...arguments);
+    }
+
+    Window_Desc.prototype = Object.create(Window_Base.prototype);
+    Window_Desc.prototype.constructor = Window_Desc;
+    Window_Desc.prototype.initialize = function (rect) {
+        Window_Base.prototype.initialize.call(this, rect);
+        this.item = null;
+        this.refresh();
+    };
+
+    Window_Desc.prototype.drawDesc = function () {
+        const label = DataManager.Reinforce.getItemUserInterfaceInfo(this.item)
+        let x = 5;
+        let y = 5;
+        let i = 0;
+        while (i < label.length) {
+            if (x > Graphics.boxWidth) {
+                x = 5;
+                y += this.lineHeight();
+            }
+            this.drawText(label[i], x, y, Graphics.boxWidth / 2)
+            x += Graphics.boxWidth / 2
+            i++;
+        }
+    };
+
+    Window_Desc.prototype.setItem = function (item) {
+        this.item = item
+    }
+
+    Window_Desc.prototype.refresh = function (msg) {
+        this.contents.clear()
+        if (msg) {
+            this.drawText(msg, 0, 10, Graphics.boxWidth, "center")
+        }
+        else if (this.item) {
+            this.drawDesc();
+        }
+    }
+
+
     const _Window_MenuCommand_addOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
-    Window_MenuCommand.prototype.addOriginalCommands = function() {
+    Window_MenuCommand.prototype.addOriginalCommands = function () {
         _Window_MenuCommand_addOriginalCommands.call(this);
         this.addCommand('强化', "reinforce", true);
     };
 
     const _Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
-    Scene_Menu.prototype.createCommandWindow = function() {
+    Scene_Menu.prototype.createCommandWindow = function () {
         _Scene_Menu_createCommandWindow.call(this);
         this._commandWindow.setHandler('reinforce', this.commandReinforce.bind(this));
         this._commandWindow.addCommand('强化', 'reinforce', true);
     };
 
-    Scene_Menu.prototype.commandReinforce = function() {
+    Scene_Menu.prototype.commandReinforce = function () {
         SceneManager.push(Scene_Reinforce);
     };
 
+
+    const pluginName = document.currentScript.src.match(/.+\/(.+)\.js/)[1];
+    // 注册一下插件命令
+    PluginManager.registerCommand(pluginName, "StartSceneReinforce", () => {
+        SceneManager.push(Scene_Reinforce);
+    });
 })()
