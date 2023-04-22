@@ -79,7 +79,7 @@
  * @desc
  * true则将强化命令添加到菜单。
  *
- * @command StartReinfoceScene
+ * @command StartReinforceScene
  * @text 合成场景开始
  * @desc开始合成场景。
  */
