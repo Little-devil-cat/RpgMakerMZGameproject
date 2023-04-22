@@ -1,4 +1,5 @@
 /*:
+ * @target MZ
  * @plugindesc 物品自定义功能
  * @author EskiNott & Hale Lin
  *
@@ -71,6 +72,16 @@
  * @type string
  * @desc 用于定义强化界面中配件强化的显示
  * @default 改造
+ *
+ * @param EnabledMenuReinforce
+ * @type boolean
+ * @default false
+ * @desc
+ * true则将强化命令添加到菜单。
+ *
+ * @command StartReinfoceScene
+ * @text 合成场景开始
+ * @desc开始合成场景。
  */
 (() => {
     const PluginPara = PluginManager.parameters('Reinforce');
@@ -91,7 +102,6 @@
     }
 
     class Material {
-        Name = "";
         MaterialType = "";
         MaterialMultiplier = 1;
         Traits = {
@@ -168,8 +178,6 @@
         let weaponComponentReg = new RegExp('type = ' + PluginPara['weaponComponentTypeName']);
         let weaponMaterialReg = new RegExp('type = ' + PluginPara['weaponMaterialTypeName']);
         let armourElementReg = new RegExp('type = ' + PluginPara['armourElementTypeName']);
-
-        itemInfo.Name = item.name;
 
         for (let noteIndex = 0; noteIndex < notes.length; noteIndex++) {
             let line = notes[noteIndex];
@@ -277,13 +285,6 @@
         item.note = newNote;
     }
 
-    DataManager.Reinforce.desWriteBack = function(item, combatInfo, materialInfo){
-        let additionString = "";
-        if(combatInfo.ComponentUpdate.NowTimes === 1) additionString = additionString.concat("\n");
-        additionString = additionString.concat(" +" + materialInfo.Name);
-        item.description = item.description.concat(additionString)
-    }
-
     //根据材料信息升级新复制的武器/护甲
     DataManager.Reinforce.CombatItemIncrease = function (newCombatItem, materialInfo, combatInfo) {
         switch (materialInfo.MaterialType) {
@@ -291,7 +292,6 @@
                 this.modifyTraits(newCombatItem, materialInfo.Traits);
                 combatInfo.ComponentUpdate.NowTimes++;
                 this.noteWriteBack(newCombatItem, "NowTimes", combatInfo.ComponentUpdate.NowTimeDescIndex, combatInfo.ComponentUpdate.NowTimes);
-                this.desWriteBack(newCombatItem, combatInfo, materialInfo);
                 break;
             case PluginPara['weaponMaterialTypeName']:
                 newCombatItem.params[2] = Math.round(newCombatItem.params[2] * materialInfo.MaterialMultiplier);
@@ -400,12 +400,7 @@
         let lable = new Array();
         if (item === null) return lable;
         if (!this.MaterialCheck(item)) {
-
-            let combatDes = item.description.split(/[\r\n]+/);
-            for(let line of combatDes){
-                lable.push(line);
-            }
-
+            lable.push(item.description);
             let isWeapon = this.isWeaponCheck(item);
             let combatItemInfo = this.getCombatItemInfo(item, isWeapon);
 
@@ -664,28 +659,31 @@
         }
     }
 
-
+    const EnabledMenuReinforce = (PluginPara['EnabledMenuReinforce'] === "true" ? true : false)
     const _Window_MenuCommand_addOriginalCommands = Window_MenuCommand.prototype.addOriginalCommands;
     Window_MenuCommand.prototype.addOriginalCommands = function () {
         _Window_MenuCommand_addOriginalCommands.call(this);
-        this.addCommand('强化', "reinforce", true);
+        if (EnabledMenuReinforce) {
+            this.addCommand('强化', "reinforce", true);
+        }
     };
+
 
     const _Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
     Scene_Menu.prototype.createCommandWindow = function () {
         _Scene_Menu_createCommandWindow.call(this);
-        this._commandWindow.setHandler('reinforce', this.commandReinforce.bind(this));
-        this._commandWindow.addCommand('强化', 'reinforce', true);
+
+        if (EnabledMenuReinforce) {
+            this._commandWindow.setHandler('reinforce', this.commandReinforce.bind(this));
+            this._commandWindow.addCommand('强化', 'reinforce', true);
+        }
     };
 
     Scene_Menu.prototype.commandReinforce = function () {
         SceneManager.push(Scene_Reinforce);
     };
-
-
-    const pluginName = document.currentScript.src.match(/.+\/(.+)\.js/)[1];
     // 注册一下插件命令
-    PluginManager.registerCommand(pluginName, "StartSceneReinforce", () => {
+    PluginManager.registerCommand('Reinforce', "StartReinforceScene", () => {
         SceneManager.push(Scene_Reinforce);
     });
 })()
