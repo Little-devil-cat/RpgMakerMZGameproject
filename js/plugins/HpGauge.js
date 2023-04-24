@@ -2,10 +2,18 @@
  * @plugindesc 血条显示插件
  * @author Hale Lin
  *
- *
+ * @param gaugeWidth
+ * @text 血条长度
+ * @type number
+ * @desc 目前默认为180，关系到状态显示，非必要请勿调整
+ * @default 180
  */
 (() => {
-    const params_Hp_Gauge = PluginManager.parameters('Hp_Gauge');
+    const params_Hp_Gauge = PluginManager.parameters('HpGauge');
+//=====================================================================================
+    Sprite_Gauge.prototype.bitmapWidth = function() {
+        return parseInt(params_Hp_Gauge['gaugeWidth']);
+    };
 //=====================================================================================
 // 给血条加一个最大值的显示
     Sprite_Gauge.prototype.drawValue = function () {
@@ -100,7 +108,6 @@
         // 颜色重置移到后面，避免其他地方变色
         this.resetTextColor();
     };
-
 
 })()
 
