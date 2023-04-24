@@ -1,13 +1,26 @@
-/*
-* 2023/3/24
-* 1-4
-*
-* */
+/*:
+ * @target MZ
+ * @plugindesc 菜单控制
+ * @author Hale Lin
+ *
+ * @param notBattleMemberOpacity
+ * @text 非出战人员不透明度
+ * @type number
+ * @desc 0~255 越低越暗 超过阈值则默认为100 系统默认值为160
+ * @default 100
+ */
 (() => {
     /*
     * 1. 去除返回按钮/菜单按钮 还有左上角的小标也要去掉
     * 选项里OFF触屏界面按钮 默认启动时设置为false
     * */
+
+    const params = PluginManager.parameters('MenuController');
+
+    let opacity = parseInt(params['notBattleMemberOpacity']);
+    if (opacity < 0 || opacity > 255) {
+        opacity = 100;
+    }
     ConfigManager.touchUI = false;
     ConfigManager.applyData = function (config) {
         this.alwaysDash = this.readFlag(config, "alwaysDash", false);
@@ -136,6 +149,22 @@
             y += lineHeight
         }
     }
+
+//=====================================================================================
+    //修改菜单不出战人物的不透明度
+    Window_MenuStatus.prototype.drawItemImage = function(index) {
+        const actor = this.actor(index);
+        const rect = this.itemRect(index);
+        const width = ImageManager.faceWidth;
+        const height = rect.height - 2;
+        // this.changePaintOpacity(actor.isBattleMember());
+        if (!actor.isBattleMember()) {
+            this.contents.paintOpacity = opacity
+        }
+        this.drawActorFace(actor, rect.x + 1, rect.y + 1, width, height);
+        this.changePaintOpacity(true);
+    };
+
 
 //=====================================================================================
 
