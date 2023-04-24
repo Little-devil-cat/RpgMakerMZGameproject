@@ -114,8 +114,9 @@
             }
         }
         if (flag){
-            for (const actor of $gameParty.members() ) {
-                const rect = this.itemRectWithPadding(actor.actorId() - 1);
+            for (let i = 0; i < $gameParty.members().length; i++) {
+                const actor = $gameParty.members()[i];
+                const rect = this.itemRectWithPadding(i);
                 const stateIconX = this.stateIconX(rect);
                 const stateIconY = this.stateIconY(rect);
                 const key = "actor%1-stateIcon".format(actor.actorId());
@@ -127,7 +128,6 @@
                     }
                 }
                 this.placeStateIcon(actor,stateIconX,stateIconY);
-
             }
         }
     };
