@@ -64,6 +64,7 @@
     var _Window_BattleStatus_initialize =  Window_BattleStatus.prototype.initialize;
     Window_BattleStatus.prototype.initialize = function(rect) {
         _Window_BattleStatus_initialize.call(this)
-        this._arrowSprite = null;
+        ArrowController._arrowSprite = null;
+        ArrowController._parent = null;
     };
 })()
