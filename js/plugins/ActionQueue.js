@@ -8,11 +8,6 @@
  * @desc 目前默认为192，公式为textOpacity / 255
  * @default 192
  *
- * @param gaugeWidth
- * @text 血条长度
- * @type number
- * @desc 目前默认为180，关系到状态显示，非必要请勿调整
- * @default 180
  *
  * @param scale
  * @text 行动条头像缩放
@@ -63,20 +58,6 @@ Window_BattleLog.prototype.backPaintOpacity = function() {
 // 玩家战斗栏改矮到原来的6/5左右
 Window_Base.prototype.lineHeight = function() {
     return JSON.parse(params_action_queue['lineHeight']);
-};
-//=====================================================================================
-// 拉长血条长度
-// Window_StatusBase.prototype.placeGauge = function(actor, type, x, y) {
-//     const key = "actor%1-gauge-%2".format(actor.actorId(), type);
-//     const sprite = this.createInnerSprite(key, Sprite_Gauge);
-//     sprite.setup(actor, type);
-//     sprite.move(x, y);
-//     //add
-//     sprite.scale.x = 1.5
-//     sprite.show();
-// };
-Sprite_Gauge.prototype.bitmapWidth = function() {
-    return JSON.parse(params_action_queue['gaugeWidth']);
 };
 
 //=====================================================================================

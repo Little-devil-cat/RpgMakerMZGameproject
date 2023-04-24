@@ -10,17 +10,17 @@
  * @default 100
  */
 (() => {
+    const params_menu = PluginManager.parameters('MenuController');
+
+    let opacity = parseInt(params_menu['notBattleMemberOpacity']);
+    if (opacity < 0 || opacity > 255) {
+        opacity = 100;
+    }
+
     /*
     * 1. 去除返回按钮/菜单按钮 还有左上角的小标也要去掉
     * 选项里OFF触屏界面按钮 默认启动时设置为false
     * */
-
-    const params = PluginManager.parameters('MenuController');
-
-    let opacity = parseInt(params['notBattleMemberOpacity']);
-    if (opacity < 0 || opacity > 255) {
-        opacity = 100;
-    }
     ConfigManager.touchUI = false;
     ConfigManager.applyData = function (config) {
         this.alwaysDash = this.readFlag(config, "alwaysDash", false);
@@ -168,108 +168,6 @@
 
 //=====================================================================================
 
-    //Reinforce界面
-    // 在菜单中添加强化按钮
-    var _Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
-    Scene_Menu.prototype.createCommandWindow = function() {
-        _Scene_Menu_createCommandWindow.call(this);
-        this._commandWindow.setHandler('enhance', this.commandEnhance.bind(this));
-        // “enhance”是自定义命令的名称，您可以根据需要进行更改。
-    };
-
-// 打开强化界面
-    Scene_Menu.prototype.commandEnhance = function() {
-        SceneManager.push(Scene_Enhance);
-    };
-
-// 创建强化界面
-    function Scene_Enhance() {
-        this.initialize.apply(this, arguments);
-    }
-
-    Scene_Enhance.prototype = Object.create(Scene_MenuBase.prototype);
-    Scene_Enhance.prototype.constructor = Scene_Enhance;
-
-    Scene_Enhance.prototype.initialize = function() {
-        Scene_MenuBase.prototype.initialize.call(this);
-    };
-
-    Scene_Enhance.prototype.create = function() {
-        Scene_MenuBase.prototype.create.call(this);
-        this.createHelpWindow();
-        this.createEnhanceWindow();
-    };
-
-    Scene_Enhance.prototype.createEnhanceWindow = function() {
-        this._enhanceWindow = new Window_Enhance(this.helpWindowHeight());
-        this.addWindow(this._enhanceWindow);
-    };
-
-// 创建武器和材料选择窗口
-    function Window_Enhance() {
-        this.initialize.apply(this, arguments);
-    }
-
-    Window_Enhance.prototype = Object.create(Window_Selectable.prototype);
-    Window_Enhance.prototype.constructor = Window_Enhance;
-
-    Window_Enhance.prototype.initialize = function(y) {
-        var width = this.windowWidth();
-        var height = this.windowHeight();
-        var x = (Graphics.boxWidth - width) / 2;
-        Window_Selectable.prototype.initialize.call(this, x, y, width, height);
-        this.refresh();
-        this.select(0);
-        this.activate();
-    };
-
-    Window_Enhance.prototype.windowWidth = function() {
-        return 400;
-    };
-
-    Window_Enhance.prototype.windowHeight = function() {
-        return this.fittingHeight(4);
-    };
-
-    Window_Enhance.prototype.maxItems = function() {
-        return 2;
-    };
-
-    Window_Enhance.prototype.item = function() {
-        return this._data[this.index()];
-    };
-
-    Window_Enhance.prototype.includes = function(item) {
-        return true;
-    };
-
-    Window_Enhance.prototype.isEnabled = function(item) {
-        return true;
-    };
-
-    Window_Enhance.prototype.makeItemList = function() {
-        this._data = [$dataWeapons, $dataItems];
-    };
-
-    Window_Enhance.prototype.drawItem = function(index) {
-        var item = this._data[index];
-        if (item) {
-            var rect = this.itemRect(index);
-            this.drawText(item.name, rect.x + 60, rect.y, rect.width - 60);
-            this.drawItemNumber(item, rect.x, rect.y, rect.width);
-        }
-    };
-
-    Window_Enhance.prototype.updateHelp = function() {
-        var item1 = this._data[0][this._index];
-        var item2 = this._data[1][this._index];
-        if (item1 && item2) {
-            var helpText = "强化 " + item1.name + " 使用 " + item2.name;
-            this._helpWindow.setText(helpText);
-        } else {
-            this._helpWindow.setText("");
-        }
-    };
 
 
 })()
