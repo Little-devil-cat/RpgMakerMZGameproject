@@ -51,6 +51,7 @@
         } else {
             this.setCursorRect(0, 0, 0, 0);
             if (ArrowController._arrowSprite) {
+                console.log("arrow:",ArrowController._arrowSprite)
                 ArrowController._parent.removeChild(this._arrowSprite);
                 ArrowController._arrowSprite.destroy()
                 ArrowController._arrowSprite = null;
@@ -60,4 +61,9 @@
         this.callUpdateHelp();
     }
 
+    var _Window_BattleStatus_initialize =  Window_BattleStatus.prototype.initialize;
+    Window_BattleStatus.prototype.initialize = function(rect) {
+        _Window_BattleStatus_initialize.call(this)
+        this._arrowSprite = null;
+    };
 })()
