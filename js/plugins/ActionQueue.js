@@ -11,8 +11,8 @@
  * @param gaugeWidth
  * @text 血条长度
  * @type number
- * @desc 目前默认为240
- * @default 240
+ * @desc 目前默认为180，关系到状态显示，非必要请勿调整
+ * @default 180
  *
  * @param scale
  * @text 行动条头像缩放

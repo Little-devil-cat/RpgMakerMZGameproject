@@ -101,6 +101,13 @@
         this.resetTextColor();
     };
 
-
+    Window_BattleStatus.prototype.placeStateIcon = function (actor, x, y) {
+        const key = "actor%1-stateIcon".format(actor.actorId());
+        console.log(key)
+        const sprite = this.createInnerSprite(key, Sprite_StateIcon);
+        sprite.setup(actor);
+        sprite.move(x, y);
+        sprite.show();
+    }
 })()
 

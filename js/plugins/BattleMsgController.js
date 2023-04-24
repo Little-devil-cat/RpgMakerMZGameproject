@@ -17,24 +17,16 @@
         return params_bmc['frameCount'];
     };
 
-    var ArrowController = {
-        _arrowSprite: null,
-        _parent: null,
-    }
-
     Window_BattleStatus.prototype.drawArrow = function(x, y) {
-        if (ArrowController._arrowSprite) {
-            ArrowController._parent.removeChild(this._arrowSprite);
-            ArrowController._arrowSprite.destroy()
-            ArrowController._arrowSprite = null;
-            ArrowController._parent = null;
+        if (this._arrowSprite) {
+            this.removeChild(this._arrowSprite);
+            this._arrowSprite.destroy()
+            this._arrowSprite = null;
         }
         var bitmap = ImageManager.loadExPic("Arrow");
         this._arrowSprite = new Sprite(bitmap);
         this._arrowSprite.move(x, y);
         this.addChild(this._arrowSprite);
-        ArrowController._arrowSprite = this._arrowSprite
-        ArrowController._parent = this
     };
 
 
@@ -50,12 +42,11 @@
             this.setCursorRect(rect.x, rect.y, rect.width, rect.height);
         } else {
             this.setCursorRect(0, 0, 0, 0);
-            if (ArrowController._arrowSprite) {
-                console.log("arrow:",ArrowController._arrowSprite)
-                ArrowController._parent.removeChild(this._arrowSprite);
-                ArrowController._arrowSprite.destroy()
-                ArrowController._arrowSprite = null;
-                ArrowController._parent = null;
+            if (this._arrowSprite) {
+                console.log("arrow:", this._arrowSprite)
+                this.removeChild(this._arrowSprite);
+                this._arrowSprite.destroy();
+                this._arrowSprite = null;
             }
         }
         this.callUpdateHelp();
@@ -63,8 +54,7 @@
 
     var _Window_BattleStatus_initialize =  Window_BattleStatus.prototype.initialize;
     Window_BattleStatus.prototype.initialize = function(rect) {
-        _Window_BattleStatus_initialize.call(this)
-        ArrowController._arrowSprite = null;
-        ArrowController._parent = null;
+        _Window_BattleStatus_initialize.call(this, rect)
+        this._arrowSprite = null;
     };
 })()
