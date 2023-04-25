@@ -251,6 +251,9 @@ Window_Speed.prototype.refresh = async function () {
             if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
                 continue
             }
+            if (firstFlag) {
+                firstFlag = actionBattler._actionState === 'waiting'
+            }
             if (actionBattler._actorId) {
                 let spriteActor = new Sprite_myActor(actionBattler)
                 spriteActor.setFrame((actionBattler._faceIndex % 4) * ImageManager.faceWidth + ImageManager.faceWidth / 4, Math.floor(actionBattler._faceIndex / 4) * ImageManager.faceHeight + ImageManager.faceHeight / 4, ImageManager.faceWidth * 0.5, ImageManager.faceHeight * 0.5)
