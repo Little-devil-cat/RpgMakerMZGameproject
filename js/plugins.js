@@ -14,5 +14,6 @@ var $plugins =
 {"name":"HpGauge","status":true,"description":"血条显示插件","parameters":{"gaugeWidth":"180"}},
 {"name":"Reinforce","status":true,"description":"物品自定义功能","parameters":{"weaponComponentTypeName":"weaponComponent","emptySkill":"6","weaponMaterialTypeName":"weaponMaterial","armourElementTypeName":"armourElement","MaterialUpdateLableName":"强化","ComponentUpdateLableName":"改造"}},
 {"name":"BattleMsgController","status":true,"description":"修改战斗信息","parameters":{"frameCount":"30"}},
-{"name":"BattleMembersSetting","status":true,"description":"战斗人员限制","parameters":{"maxBattleMembers":"3"}}
+{"name":"BattleMembersSetting","status":true,"description":"战斗人员限制","parameters":{"maxBattleMembers":"3"}},
+{"name":"SLCY_ZDJS","status":true,"description":"战斗加速 版本1.06","parameters":{"DefaultMode":"false","Speed":"4","Key":"shift","OkSound":"Cursor3","CancelSound":"Cancel1"}}
 ];
