@@ -12,14 +12,14 @@
 
 (() => {
     const params_bmc = PluginManager.parameters('BattleMsgController');
-    Window_BattleLog.prototype.messageSpeed = function() {
+    Window_BattleLog.prototype.messageSpeed = function () {
         // return 16;
         return params_bmc['frameCount'];
     };
     /*
     * 提示谁行动的箭头
     * */
-    Window_BattleStatus.prototype.drawArrow = function(x, y) {
+    Window_BattleStatus.prototype.drawArrow = function (x, y) {
         if (this._arrowSprite) {
             this.removeChild(this._arrowSprite);
             this._arrowSprite.destroy()
@@ -53,8 +53,8 @@
         this.callUpdateHelp();
     }
 
-    var _Window_BattleStatus_initialize =  Window_BattleStatus.prototype.initialize;
-    Window_BattleStatus.prototype.initialize = function(rect) {
+    var _Window_BattleStatus_initialize = Window_BattleStatus.prototype.initialize;
+    Window_BattleStatus.prototype.initialize = function (rect) {
         _Window_BattleStatus_initialize.call(this, rect)
         this._arrowSprite = null;
     };
@@ -62,32 +62,34 @@
     /*
     * 人物状态分布显示
     * */
-    Window_BattleStatus.prototype.myDrawIcon = function (key, index, turns, id, x, y) {
-        const mySprite = this.createInnerSprite(key+id, Sprite)
+    Window_BattleStatus.prototype.myDrawIcon = function (key, index, turns, id, x, y, needCount) {
+        const mySprite = this.createInnerSprite(key + id, Sprite)
         const pw = ImageManager.iconWidth;
         const ph = ImageManager.iconHeight;
         const sx = (index % 16) * pw;
         const sy = Math.floor(index / 16) * ph;
         mySprite.bitmap = ImageManager.loadSystem("IconSet");
-        mySprite.setFrame(0,0,0,0);
+        mySprite.setFrame(0, 0, 0, 0);
         mySprite.setFrame(sx, sy, pw, ph);
         mySprite.isIcon = true;
         mySprite.move(x, y);
         mySprite.show();
 
-        const myTextSprite = this.createInnerSprite(key+id+'Text', Sprite)
-        myTextSprite.bitmap = new Bitmap(pw,ph);
-        myTextSprite.bitmap.drawText(turns,0, 0, pw, ph, 'center');
-        myTextSprite.isIcon = true;
-        myTextSprite.move(x, y);
-        myTextSprite.show();
+        if (needCount) {
+            const myTextSprite = this.createInnerSprite(key + id + 'Text', Sprite)
+            myTextSprite.bitmap = new Bitmap(pw, ph);
+            myTextSprite.bitmap.drawText(turns, 0, 0, pw, ph, 'center');
+            myTextSprite.isIcon = true;
+            myTextSprite.move(x, y);
+            myTextSprite.show();
+        }
         return mySprite
 
     }
     Window_BattleStatus.prototype.placeStateIcon = function (actor, x, y) {
         const key = "actor%1-stateIcon".format(actor.actorId());
         // const sprite = this.createInnerSprite(key, Sprite_StateIcon);
-        const icons = actor.states();
+        const allIcons = actor.states();
         const iconWidth = ImageManager.iconWidth;
         const iconHeight = ImageManager.iconHeight;
         const maxIconsPerRow = 2; //每行最多显示2个icon
@@ -95,17 +97,20 @@
         const ySpacing = 0; //行与行之间的间距
         x -= iconWidth * 1.5;
         y -= iconWidth / 2;
+        const icons = allIcons.filter(item => {
+            return item.iconIndex > 0
+        })
         for (let i = 0; i < icons.length; i++) {
             const col = i % maxIconsPerRow; //计算icon在该行的列数
             const row = Math.floor(i / maxIconsPerRow); //计算icon所在的行数
             const xPos = x + (col * (iconWidth + xSpacing)); //计算icon的x坐标
             const yPos = y + (row * (iconHeight + ySpacing)); //计算icon的y坐标
-            const iconSprite = this.myDrawIcon(key, icons[i].iconIndex, actor._stateTurns[icons[i].id],icons[i].id,xPos, yPos);
+            const iconSprite = this.myDrawIcon(key, icons[i].iconIndex, actor._stateTurns[icons[i].id], icons[i].id, xPos, yPos, icons[i].autoRemovalTiming > 0);
         }
     }
 
     var _Window_BattleStatus_update = Window_BattleStatus.prototype.update
-    Window_BattleStatus.prototype.update = function() {
+    Window_BattleStatus.prototype.update = function () {
         _Window_BattleStatus_update.call(this)
         let flag = false
         for (const actor of $gameParty.members()) {
@@ -113,7 +118,7 @@
                 flag = true
             }
         }
-        if (flag){
+        if (flag) {
             for (let i = 0; i < $gameParty.members().length; i++) {
                 const actor = $gameParty.members()[i];
                 const rect = this.itemRectWithPadding(i);
@@ -129,7 +134,7 @@
                         sprite.destroy();
                     }
                 }
-                this.placeStateIcon(actor,stateIconX,stateIconY);
+                this.placeStateIcon(actor, stateIconX, stateIconY);
             }
         }
     };
