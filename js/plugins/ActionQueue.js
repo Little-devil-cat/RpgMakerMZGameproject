@@ -8,11 +8,6 @@
  * @desc 目前默认为192，公式为textOpacity / 255
  * @default 192
  *
- * @param gaugeWidth
- * @text 血条长度
- * @type number
- * @desc 目前默认为240
- * @default 240
  *
  * @param scale
  * @text 行动条头像缩放
@@ -63,20 +58,6 @@ Window_BattleLog.prototype.backPaintOpacity = function() {
 // 玩家战斗栏改矮到原来的6/5左右
 Window_Base.prototype.lineHeight = function() {
     return JSON.parse(params_action_queue['lineHeight']);
-};
-//=====================================================================================
-// 拉长血条长度
-// Window_StatusBase.prototype.placeGauge = function(actor, type, x, y) {
-//     const key = "actor%1-gauge-%2".format(actor.actorId(), type);
-//     const sprite = this.createInnerSprite(key, Sprite_Gauge);
-//     sprite.setup(actor, type);
-//     sprite.move(x, y);
-//     //add
-//     sprite.scale.x = 1.5
-//     sprite.show();
-// };
-Sprite_Gauge.prototype.bitmapWidth = function() {
-    return JSON.parse(params_action_queue['gaugeWidth']);
 };
 
 //=====================================================================================
@@ -149,14 +130,15 @@ BattleManager.makeActionOrders = function () {
         battlers.push(...$gameTroop.members());
     }
     for (const battler of battlers) {
-        // battler.makeSpeed();
-        if (battler._enemyId) {
-            battler._speed = battler.agi * 100
-        }
-        // 敏捷 * 0.8 ~ 1.2 + 等级 * 0.1
-        else {
-            battler._speed = battler.agi * Math.floor((Math.random() * 0.4 + 0.8) * 100) + battler._level * 0.1
-        }
+        // // battler.makeSpeed();
+        // if (battler._enemyId) {
+        //     battler._speed = battler.agi * 100
+        // }
+        // // 敏捷 * 0.8 ~ 1.2 + 等级 * 0.1
+        // else {
+        //     battler._speed = battler.agi * Math.floor((Math.random() * 0.4 + 0.8) * 100) + battler._level * 0.1
+        // }
+        battler._speed = battler.agi * Math.floor((Math.random() * 0.6 + 0.7) * 100);
     }
     battlers.sort((a, b) => b.speed() - a.speed());
     console.log(battlers)
@@ -268,6 +250,9 @@ Window_Speed.prototype.refresh = async function () {
             // 死了就不画了
             if (actionBattler._states.indexOf(1) >= 0 || actionBattler._hidden) {
                 continue
+            }
+            if (firstFlag) {
+                firstFlag = actionBattler._actionState === 'waiting'
             }
             if (actionBattler._actorId) {
                 let spriteActor = new Sprite_myActor(actionBattler)
