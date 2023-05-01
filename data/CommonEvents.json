@@ -146,8 +146,8 @@ null,
 {"id":144,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
 {"id":145,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
 {"id":146,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
-{"id":147,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
-{"id":148,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
-{"id":149,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0},
-{"id":150,"list":[{"code":0,"indent":0,"parameters":[]}],"name":"","switchId":1,"trigger":0}
+{"id":147,"list":[{"code":101,"indent":0,"parameters":["",0,0,2,"文件"]},{"code":401,"indent":0,"parameters":["列兵米哈伊尔，列兵谢苗，列兵季莫费"]},{"code":0,"indent":0,"parameters":[]}],"name":"狂信徒们的身份文件","switchId":1,"trigger":0},
+{"id":148,"list":[{"code":101,"indent":0,"parameters":["",0,0,2,"文件"]},{"code":401,"indent":0,"parameters":["帕维尔·埃布拉诺维奇·诺维科夫，B型血，少尉，麻醉医生，手术助理"]},{"code":0,"indent":0,"parameters":[]}],"name":"黄毛的身份文件","switchId":1,"trigger":0},
+{"id":149,"list":[{"code":101,"indent":0,"parameters":["",0,0,2,"文件"]},{"code":401,"indent":0,"parameters":["安娜斯塔西·彼得洛夫娜·维克托莉娅，B型血，中尉，外科手术医生，救援指挥"]},{"code":0,"indent":0,"parameters":[]}],"name":"安娜的身份文件","switchId":1,"trigger":0},
+{"id":150,"list":[{"code":101,"indent":0,"parameters":["",0,0,2,"文件"]},{"code":401,"indent":0,"parameters":["希娅·欧列伽芙娜·卡列尼娜，A型血，中士，手术助理，支前医疗官"]},{"code":0,"indent":0,"parameters":[]}],"name":"希娅的身份文件","switchId":1,"trigger":0}
 ]
