@@ -8,7 +8,7 @@ null,
 {"id":6,"expanded":true,"name":"破旧的医院","order":19,"parentId":5,"scrollX":867.5,"scrollY":563.5},
 {"id":7,"expanded":true,"name":"世界地图1","order":1,"parentId":0,"scrollX":859.5,"scrollY":571.5},
 {"id":8,"expanded":true,"name":"世界地图2","order":24,"parentId":0,"scrollX":859.5,"scrollY":571.5},
-{"id":9,"expanded":false,"name":"帐篷内部","order":22,"parentId":5,"scrollX":860.5,"scrollY":571.5},
+{"id":9,"expanded":false,"name":"帐篷内部","order":22,"parentId":5,"scrollX":859.5,"scrollY":563.5},
 {"id":10,"expanded":false,"name":"推进剧情用空地图","order":17,"parentId":1,"scrollX":859.5,"scrollY":571.5},
 {"id":11,"expanded":false,"name":"营地","order":25,"parentId":8,"scrollX":860,"scrollY":571.5},
 {"id":12,"expanded":true,"name":"军营","order":2,"parentId":7,"scrollX":859.5,"scrollY":571.5},
@@ -31,6 +31,6 @@ null,
 {"id":29,"expanded":true,"name":"破旧的医院章节推进","order":23,"parentId":5,"scrollX":867.5,"scrollY":563.5},
 {"id":30,"expanded":true,"name":"烧焦的森林2","order":33,"parentId":13,"scrollX":0,"scrollY":0},
 {"id":31,"expanded":true,"name":"烧焦的森林第一层","order":31,"parentId":8,"scrollX":0,"scrollY":0},
-{"id":32,"expanded":true,"name":"破旧的医院（出勤）","order":20,"parentId":6,"scrollX":867.5,"scrollY":563.5},
-{"id":33,"expanded":true,"name":"破旧的医院（深处）","order":21,"parentId":32,"scrollX":1201.5,"scrollY":563.5}
+{"id":32,"expanded":true,"name":"破旧的医院（出勤）","order":20,"parentId":6,"scrollX":859.5,"scrollY":563.5},
+{"id":33,"expanded":true,"name":"破旧的医院（深处）","order":21,"parentId":32,"scrollX":1300.5,"scrollY":583.5}
 ]
