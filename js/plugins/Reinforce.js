@@ -497,6 +497,10 @@
         this._reinforceSelectWindowRight.setHandler("cancel", this.onMaterialSelectCancel.bind(this));
         this._reinforceSelectWindowRight.refresh();
         this._reinforceSelectWindowRight.deactivate();
+
+        if (this._reinforceSelectWindowLeft._data.length > 0) {
+            this._reinforceSelectWindowLeft.select(0);
+        }
         this.addWindow(this._reinforceSelectWindowRight);
     };
     Scene_Reinforce.prototype.onReinforceSelect = function () {
@@ -509,11 +513,15 @@
         this.popScene();
     }
     Scene_Reinforce.prototype.onReinforceSelectOk = function () {
+        if (this._reinforceSelectWindowLeft._index < 0) {
+            this._reinforceSelectWindowLeft.select(0)
+        }
+
         var item = this._reinforceSelectWindowLeft.item();
         if (item) {
             // this._reinforceSelectWindowRight.open();
             this._reinforceSelectWindowRight.activate();
-            this._reinforceSelectWindowRight.select(-1);
+            this._reinforceSelectWindowRight.select(0);
             this._combatItem = item;
         }
     };
@@ -533,6 +541,10 @@
         this._reinforceSelectWindowLeft.activate();
     }
     Scene_Reinforce.prototype.onMaterialSelectOk = function () {
+        if (this._reinforceSelectWindowRight._index < 0) {
+            this._reinforceSelectWindowRight.select(0);
+        }
+
         var material = this._reinforceSelectWindowRight.item();
         if (material) {
             var res = DataManager.Reinforce.reinforce(this._combatItem, material, true);
